@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "712554653780",
+    "project_id": "bera-7e072",
+    "storage_bucket": "bera-7e072.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712554653780:android:136e958c6a2acbe9f165c1",
+        "android_client_info": {
+          "package_name": "com.example.my_first_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712554653780-afebqfak348vmv8od86b0hbbn5bp8t08.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgvhliqs6SZdSOveWWmtBtrU8LbAm72rc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712554653780-afebqfak348vmv8od86b0hbbn5bp8t08.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
