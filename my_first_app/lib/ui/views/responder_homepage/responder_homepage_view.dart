@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/ui/common/app_constants.dart';
+import 'package:my_first_app/ui/custom_widget/app_button.dart';
 import 'package:stacked/stacked.dart';
 
 import 'responder_homepage_viewmodel.dart';
@@ -23,11 +25,18 @@ class ResponderHomepageView extends StackedView<ResponderHomepageViewModel> {
               shrinkWrap: true,
               itemCount: 5, // Adjust as needed
               itemBuilder: (context, index) {
-                return ElevatedButton(
-                  onPressed: () {
-                    // Handle the specific incident based on the index.
-                  },
-                  child: Text('Incident ${index + 1}'),
+                return AppButton(
+                  onClick:viewModel.displayNotifications,
+                  title: AppConstants.aboutCourseText,
+                  child:Container(
+                  width: 200.0,
+                  height: 200.0,
+                  alignment: Alignment.center,
+                  child: const Text(
+                    AppConstants.helpText,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
                 );
               },
             ),

@@ -1,7 +1,7 @@
 import 'package:my_first_app/app/app.bottomsheets.dart';
 import 'package:my_first_app/app/app.dialogs.dart';
 import 'package:my_first_app/app/app.locator.dart';
-import 'package:my_first_app/local_notifications.dart';
+import 'package:my_first_app/notification_service.dart';
 import 'package:my_first_app/ui/common/app_strings.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
