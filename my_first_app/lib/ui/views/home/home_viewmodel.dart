@@ -7,7 +7,6 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-
 class HomeViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
   final _bottomSheetService = locator<BottomSheetService>();
@@ -21,11 +20,11 @@ class HomeViewModel extends BaseViewModel {
   get counterLabel => null;
 
   Future<void> helpPressed() async {
-   
-     LocalNotifications.showSimpleNotification(title: "Simple Notification",
-      body: "This is a simple notification",
-      payload: "This is a simple data");
-      
+    LocalNotifications.showSimpleNotification(
+        title: "Simple Notification",
+        body: "This is a simple notification",
+        payload: "This is a simple data");
+
     if (btnFireSelected == false &&
         btnMedSelected == false &&
         btnPoliceSelected == false) {
@@ -42,7 +41,6 @@ class HomeViewModel extends BaseViewModel {
     btnPoliceSelected = false;
     rebuildUi();
   }
-   
 
   void medPressed() {
     btnMedSelected = !btnMedSelected;

@@ -16,7 +16,7 @@ class StartupView extends StackedView<StartupViewModel> {
     StartupViewModel viewModel,
     Widget? child,
   ) {
-    return  Scaffold(
+    return Scaffold(
       body: SingleChildScrollView(
         child: Center(
           child: Column(

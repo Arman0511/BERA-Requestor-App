@@ -43,6 +43,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
       return right(const None());
     } on FirebaseAuthException catch (e) {
       String errorMessage = e.message.toString();
+      print(errorMessage);
       if (e.code == 'weak-password') {
         errorMessage = AppExceptionConstants.passwordIsWeak;
       } else if (e.code == 'email-already-in-use') {

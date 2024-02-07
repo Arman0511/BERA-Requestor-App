@@ -6,7 +6,6 @@ class LocalNotifications {
   static final _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
-
   static Future<void> init() async {
     // Initialize the plugin. app_icon needs to be added as a drawable resource to the Android head project
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -58,24 +57,23 @@ class LocalNotifications {
     );
   }
 }
+
 //push notification
-class PushNotifications{
+class PushNotifications {
   static final _firebaseMessaging = FirebaseMessaging.instance;
 
   //request notification permission
-  static Future init()async{
+  static Future init() async {
     await _firebaseMessaging.requestPermission(
-      alert: true, 
-      announcement:true, 
-      badge: true, 
-      carPlay: false, 
-      criticalAlert: false, 
-      provisional: false, 
-      sound: true);
-       //get the device fcm token
-final token = await _firebaseMessaging.getToken();
-print("device token: $token");
-
+        alert: true,
+        announcement: true,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true);
+    //get the device fcm token
+    final token = await _firebaseMessaging.getToken();
+    print("device token: $token");
   }
- 
 }

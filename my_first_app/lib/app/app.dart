@@ -14,6 +14,8 @@ import '../services/authentication_service_impl.dart';
 import '../services/authentication_service_mock.dart';
 import '../services/shared_pref_service.dart';
 import 'package:my_first_app/ui/views/user_sign_up/user_sign_up_view.dart';
+import 'package:my_first_app/ui/views/message_view/message_view_view.dart';
+import 'package:my_first_app/ui/views/forgot_password_view/forgot_password_view_view.dart';
 // @stacked-import
 
 @StackedApp(
@@ -25,6 +27,8 @@ import 'package:my_first_app/ui/views/user_sign_up/user_sign_up_view.dart';
     MaterialRoute(page: ResponderSignUpView),
     MaterialRoute(page: ResponderHomepageView),
     MaterialRoute(page: UserSignUpView),
+    MaterialRoute(page: MessageViewView),
+    MaterialRoute(page: ForgotPasswordViewView),
 // @stacked-route
   ],
   dependencies: [

@@ -1,68 +1,23 @@
 class AppConstants {
-  static const allAnswerCorrect =
-      "Congratulations for getting \nall the answer correct!";
+  static const accountCreatedSuccessfullyText = "Account Create Successfully";
+  static const welcomeText = "Welcome To BERA";
+  static const emailText = "Email";
+  static const passwordText = "Password";
+  static const loginText = "Login";
+  static const createNewAccText = "Create New Account";
+  static const forgotPassText = "Forgot Password";
 
-  static const editCreditCardText = "Edit Credit card";
+  static const createAccText = "Create Account";
+  static const roleText = "Select Role";
+  static const studentText = "Student";
+  static const instructorText = "Instructor";
+  static const nameText = "Name";
+  static const confirmPassText = "Confirm Password";
+  static const createText = "Create";
 
-  static const saveSuccessfullyText = "Save Successfully!";
-
-  static const emptyPaymentMethodText = "Empty payment method";
-
-  static const deleteText = "Delete";
-
-  static const gotItText = "Got It";
-
-  static const deletedSuccessfullyText = "Deleted Successfully!";
-
-  static const currentEmailText = "Current Email";
-
-  static const currentPasswordText = "Current Password";
-
-  static const enterNewEmail = "Enter New Email";
-
-  static const emailChangeSuccessfullyText =
-      "Email Successfully Change! Try to login";
-
-  static const currentNameText = "Current name";
-
-  static const newNameText = "New name";
-
-  static const nameSuccessfullyChangeText =
-      "Name Successfully Change! Try to login";
-
-  static const matchPassword = "Match Password";
-
-  static const passwordChangedSuccessfullyText =
-      "Password Successfully Change! Try to login";
-
-  static const pickGalleryText = "Pick Gallery";
-
-  static const profileChangeSuccessfullyText = "Profile change successfully!";
-
-  static const passwordResetLinkText =
-      "Password reset link sent! Check your email";
-
-  static const nextText = "Next";
-
-  static const letsStartText = "Let's Start";
-
-  static const coursePurchaseSuccessfullyText = "Course purchase successfully";
-
-  static const uploadProfileText = "Upload Profile";
-
-  static const changePasswordText = "Change Password";
-
-  static const changeEmailText = "Change Email";
-
-  static const accountCreatedSuccessfullyText = "Account created successfully.";
+  static const sentResetPassLinkText = "Send Reset Link";
 
   AppConstants._();
-
-  static const userPrefKey = 'USER_KEY';
-
-  static const coursePrefKey = 'COURSE_KEY';
-
-  static const appIntroGuideKey = 'APP_INTRO_KEY';
 
   static const medicalEmergencyText = "Medical Emergency";
   static const helpText = "HELP!!";
@@ -80,10 +35,7 @@ class AppConstants {
   static const profileText = "Profile";
   static const settingText = "Settings";
   static const courseText = "Courses";
-  static const emailText = "Email";
   static const eMailText = "E-mail";
-  static const passwordText = "Password";
-  static const nameText = "Name";
   static const loginBodyText = "Login with social networks";
   static const signUpBodyText = "Create your account";
   static const accountInfoText = "Account information";

@@ -119,7 +119,6 @@ class UserSignUpView extends StackedView<UserSignUpViewModel> {
                         AppButton2(
                           title: AppConstants.signUpText,
                           onClick: viewModel.signupPressed,
-                         
                         ),
                         TextButton(
                           onPressed: viewModel.goToLoginPage,

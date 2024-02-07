@@ -26,17 +26,17 @@ class ResponderHomepageView extends StackedView<ResponderHomepageViewModel> {
               itemCount: 5, // Adjust as needed
               itemBuilder: (context, index) {
                 return AppButton(
-                  onClick:viewModel.displayNotifications,
+                  onClick: viewModel.displayNotifications,
                   title: AppConstants.aboutCourseText,
-                  child:Container(
-                  width: 200.0,
-                  height: 200.0,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    AppConstants.helpText,
-                    style: TextStyle(color: Colors.white),
+                  child: Container(
+                    width: 200.0,
+                    height: 200.0,
+                    alignment: Alignment.center,
+                    child: const Text(
+                      AppConstants.helpText,
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
                 );
               },
             ),

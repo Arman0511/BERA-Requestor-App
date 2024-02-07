@@ -45,12 +45,11 @@ class AppButton2 extends StatelessWidget {
     required this.title,
     required this.onClick,
     this.isSelected = false,
-
   }) : super(key: key);
 
   final String title;
   final OnClick onClick;
-  
+
   bool isSelected;
 
   @override
@@ -61,7 +60,9 @@ class AppButton2 extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onClick,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? const Color.fromARGB(255, 224, 158, 2) : const Color.fromARGB(255, 41, 47, 227),
+          backgroundColor: isSelected
+              ? const Color.fromARGB(255, 224, 158, 2)
+              : const Color.fromARGB(255, 41, 47, 227),
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

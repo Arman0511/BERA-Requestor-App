@@ -21,27 +21,27 @@ class SignUpSelectionView extends StackedView<SignUpSelectionViewModel> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-               onPressed: viewModel.responder,
-                          child: const Text(
-                            AppConstants.responderText,
-                            style: TextStyle(
-                              color: Color(0xFF78746D),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+              onPressed: viewModel.responder,
+              child: const Text(
+                AppConstants.responderText,
+                style: TextStyle(
+                  color: Color(0xFF78746D),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-               onPressed: viewModel.user,
-                          child: const Text(
-                            AppConstants.userText,
-                            style: TextStyle(
-                              color: Color(0xFF78746D),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+              onPressed: viewModel.user,
+              child: const Text(
+                AppConstants.userText,
+                style: TextStyle(
+                  color: Color(0xFF78746D),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
           ],
         ),

@@ -12,16 +12,16 @@ import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'firebase_options.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
 //function to listen to background changes
 
-Future _firebaseBackgroundMessage(RemoteMessage message)async{
-  if(message.notification!=null){
+Future _firebaseBackgroundMessage(RemoteMessage message) async {
+  if (message.notification != null) {
     print("Some Notification Received");
   }
 }
 
 Future<void> main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
   await LocalNotifications.init();
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +31,16 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // //listen to background notifications
+  // on background notification tapped
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      print("Bacground Notification Tapped");
+      navigatorKey.currentState!.pushNamed("/message", arguments: message);
+    }
+  });
+  //listen to background notifications
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
-   PushNotifications.init();
+  PushNotifications.init();
 
   runApp(const MainApp());
 }

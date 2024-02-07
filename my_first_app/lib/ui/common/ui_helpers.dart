@@ -19,6 +19,14 @@ const Widget verticalSpaceMedium = SizedBox(height: _mediumSize);
 const Widget verticalSpaceLarge = SizedBox(height: _largeSize);
 const Widget verticalSpaceMassive = SizedBox(height: _massiveSize);
 
+BoxShadow primaryShadow() => BoxShadow(
+      color: Color(0xFF948D8D),
+      offset: Offset.fromDirection(-15, -4),
+      blurStyle: BlurStyle.normal,
+      spreadRadius: 1,
+      blurRadius: 6,
+    );
+
 Widget spacedDivider = const Column(
   children: <Widget>[
     verticalSpaceMedium,
