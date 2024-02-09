@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_first_app/ui/constants/app_png.dart';
+import 'package:my_first_app/ui/custom_widget/app_image.dart';
 import 'package:stacked/stacked.dart';
 import 'package:my_first_app/ui/common/ui_helpers.dart';
 
@@ -16,27 +18,23 @@ class StartupView extends StackedView<StartupViewModel> {
     StartupViewModel viewModel,
     Widget? child,
   ) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 264),
-                child: Container(
-                  width: 375,
-                  height: 250,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(PngImages.beraLogo),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return const Scaffold(
+      backgroundColor: Color(0xFFDCDCDC),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppImage(
+              path: AppPng.AppLogoPath,
+              width: 250,
+              height: 250,
+            ),
+            verticalSpaceSmall,
+            CircularProgressIndicator(
+              color: Color.fromARGB(255, 82, 249, 255),
+              strokeWidth: 6,
+            ),
+          ],
         ),
       ),
     );

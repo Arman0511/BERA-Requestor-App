@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/ui/constants/app_color.dart';
+import 'package:my_first_app/ui/constants/app_png.dart';
+import 'package:my_first_app/ui/custom_widget/app2_button.dart';
+import 'package:my_first_app/ui/custom_widget/app_body.dart';
+import 'package:my_first_app/ui/custom_widget/app_image.dart';
+import 'package:my_first_app/ui/custom_widget/app_password_textfield.dart';
+import 'package:my_first_app/ui/custom_widget/app_textfield.dart';
+import 'package:my_first_app/ui/custom_widget/app_title_text.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../common/app_constants.dart';
@@ -14,128 +22,75 @@ class UserSignUpView extends StackedView<UserSignUpViewModel> {
     UserSignUpViewModel viewModel,
     Widget? child,
   ) {
-    return Scaffold(
-      body: SafeArea(
-          child: viewModel.isBusy
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        const Column(
-                          children: [
-                            Text(
-                              AppConstants.signUpText,
-                              style: TextStyle(
-                                color: Color(0xFF3B3936),
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: -0.50,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 8.0,
-                            ),
-                            Text(
-                              AppConstants.signUpBodyText,
-                              style: TextStyle(
-                                color: Color(0xFF78746D),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16.0,
-                        ),
-                        TextField(
-                          controller: viewModel.nameTextController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            labelText: AppConstants.nameText,
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF78746D),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16.0,
-                        ),
-                        TextField(
-                          controller: viewModel.emailTextController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            labelText: AppConstants.eMailText,
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF78746D),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16.0,
-                        ),
-                        TextField(
-                          controller: viewModel.passwordTextController,
-                          obscureText: viewModel.obscureText,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            labelText: AppConstants.passwordText,
-                            labelStyle: const TextStyle(
-                              color: Color(0xFF78746D),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                viewModel.visibility();
-                              },
-                              icon: Transform.scale(
-                                scale: 1,
-                                child: Icon(viewModel.obscureText == true
-                                    ? Icons.remove_red_eye
-                                    : Icons.visibility_off),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16.0,
-                        ),
-                        AppButton2(
-                          title: AppConstants.signUpText,
-                          onClick: viewModel.signupPressed,
-                        ),
-                        TextButton(
-                          onPressed: viewModel.goToLoginPage,
-                          child: const Text(
-                            AppConstants.logInText,
-                            style: TextStyle(
-                              color: Color(0xFF78746D),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
-    );
+    return AppBody(
+        body: SingleChildScrollView(
+      child: Column(
+        children: [
+          AppBar(),
+          AppTitleText(text: AppConstants.createAccText),
+          AppImage(path: AppPng.AppAuthCreatePath),
+          SizedBox(
+            height: 25,
+          ),
+          DropdownMenu(
+            hintText: AppConstants.roleText,
+            menuStyle: MenuStyle(
+              alignment: Alignment.centerLeft,
+            ),
+            leadingIcon: Icon(
+              Icons.people_alt,
+              color: const Color.fromARGB(255, 32, 211, 217),
+            ),
+            textStyle: TextStyle(
+              fontSize: 15,
+              color: AppColor.secondaryColor,
+              fontWeight: FontWeight.w500,
+            ),
+            dropdownMenuEntries: [
+              DropdownMenuEntry(
+                value: 1,
+                label: AppConstants.needHelpText,
+              ),
+              DropdownMenuEntry(
+                value: 2,
+                label: AppConstants.responderText,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 25,
+          ),
+          AppTextField(
+            controller: viewModel.nameTextController,
+            label: AppConstants.nameText,
+            icon: Icon(
+              Icons.person,
+              color: const Color.fromARGB(255, 32, 211, 217),
+            ),
+          ),
+          AppTextField(
+            controller: viewModel.phoneNumTextController,
+            label: AppConstants.phoneNumText,
+            icon: Icon(
+              Icons.contact_phone,
+              color: const Color.fromARGB(255, 32, 211, 217),
+            ),
+          ),
+          AppTextField(
+              controller: viewModel.emailTextController,
+              label: AppConstants.emailText),
+          AppPasswordTextField(
+            controller: viewModel.passwordTextController,
+            label: AppConstants.passwordText,
+          ),
+          AppPasswordTextField(
+            controller: viewModel.passwordTextController,
+            label: AppConstants.confirmPassText,
+          ),
+          App2Button(text: AppConstants.createText, onClick: () {})
+        ],
+      ),
+    ));
   }
 
   @override

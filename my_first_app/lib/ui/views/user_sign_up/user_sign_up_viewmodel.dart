@@ -9,6 +9,7 @@ import '../../common/app_constants.dart';
 import '../../common/app_exception_constants.dart';
 
 class UserSignUpViewModel extends BaseViewModel {
+   final phoneNumTextController = TextEditingController();
   final nameTextController = TextEditingController();
   final emailTextController = TextEditingController();
   final passwordTextController = TextEditingController();

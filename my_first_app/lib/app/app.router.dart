@@ -17,8 +17,7 @@ import 'package:my_first_app/ui/views/responder_homepage/responder_homepage_view
     as _i7;
 import 'package:my_first_app/ui/views/responder_sign_up/responder_sign_up_view.dart'
     as _i6;
-import 'package:my_first_app/ui/views/sign_up_selection/sign_up_selection_view.dart'
-    as _i5;
+   
 import 'package:my_first_app/ui/views/startup/startup_view.dart' as _i3;
 import 'package:my_first_app/ui/views/user_sign_up/user_sign_up_view.dart'
     as _i8;
@@ -71,10 +70,7 @@ class StackedRouter extends _i1.RouterBase {
       Routes.loginView,
       page: _i4.LoginView,
     ),
-    _i1.RouteDef(
-      Routes.signUpSelectionView,
-      page: _i5.SignUpSelectionView,
-    ),
+
     _i1.RouteDef(
       Routes.responderSignUpView,
       page: _i6.ResponderSignUpView,
@@ -116,12 +112,7 @@ class StackedRouter extends _i1.RouterBase {
         settings: data,
       );
     },
-    _i5.SignUpSelectionView: (data) {
-      return _i11.MaterialPageRoute<dynamic>(
-        builder: (context) => const _i5.SignUpSelectionView(),
-        settings: data,
-      );
-    },
+
     _i6.ResponderSignUpView: (data) {
       return _i11.MaterialPageRoute<dynamic>(
         builder: (context) => const _i6.ResponderSignUpView(),

@@ -9,9 +9,10 @@ class AppConstants {
 
   static const createAccText = "Create Account";
   static const roleText = "Select Role";
-  static const studentText = "Student";
-  static const instructorText = "Instructor";
+  static const needHelpText = "Need Help";
+  static const responderText = "Responder";
   static const nameText = "Name";
+  static const phoneNumText = "Phone Number";
   static const confirmPassText = "Confirm Password";
   static const createText = "Create";
 
@@ -21,8 +22,6 @@ class AppConstants {
 
   static const medicalEmergencyText = "Medical Emergency";
   static const helpText = "HELP!!";
-  static const responderText = "I'm a Responder";
-  static const userText = "I'm a NormalUser";
   static const incident1Text = "Incident 1";
   static const logInText = "Log in";
   static const signUpText = "Sign up";
