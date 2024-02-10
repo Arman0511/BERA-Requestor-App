@@ -11,9 +11,6 @@ class LoginViewModel extends BaseViewModel {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  void signUp() {
-    _navigationService.navigateToSignUpSelectionView();
-  }
 
   void logIn() {
     _navigationService.replaceWithHomeView();

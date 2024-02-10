@@ -47,7 +47,8 @@ class _GamePasswordTextFieldState extends State<AppPasswordTextField> {
                 fontSize: 20,
                 fontWeight: FontWeight.w400,
               ),
-              prefixIcon: Icon(Icons.lock, color: const Color.fromARGB(255, 32, 202, 217)),
+              prefixIcon: Icon(Icons.lock,
+                  color: const Color.fromARGB(255, 32, 202, 217)),
               suffixIcon: IconButton(
                 onPressed: onClick,
                 icon: Transform.scale(
