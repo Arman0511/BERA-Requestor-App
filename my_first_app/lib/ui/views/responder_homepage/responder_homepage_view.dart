@@ -27,7 +27,7 @@ class ResponderHomepageView extends StackedView<ResponderHomepageViewModel> {
               itemBuilder: (context, index) {
                 return AppButton(
                   onClick: viewModel.displayNotifications,
-                  title: AppConstants.aboutCourseText,
+                  title: AppConstants.cartCourseText,
                   child: Container(
                     width: 200.0,
                     height: 200.0,

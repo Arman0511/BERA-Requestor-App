@@ -7,5 +7,5 @@ class AppPng {
   static const AppAuthLoginPath = "${pngPath}BERA_LOGO.png";
   static const AppAuthCreatePath = "${pngPath}authentication_logo.png";
   static const AppAuthForgotPath = "${pngPath}forgot-password.png";
-  static const AppAvatarPath = "${pngPath}avatar.png";
+  static const AppAvatarPath = "${pngPath}profile (1).png";
 }

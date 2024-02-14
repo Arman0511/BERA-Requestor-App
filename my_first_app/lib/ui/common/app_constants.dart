@@ -1,5 +1,5 @@
 class AppConstants {
-  static const accountCreatedSuccessfullyText = "Account Create Successfully";
+  static const sendText = "Send Photo";
   static const welcomeText = "Welcome To BERA";
   static const emailText = "Email";
   static const passwordText = "Password";
@@ -38,7 +38,7 @@ class AppConstants {
   static const loginBodyText = "Login with social networks";
   static const signUpBodyText = "Create your account";
   static const accountInfoText = "Account information";
-  static const aboutCourseText = "About the course";
+  static const HomeText = "Home";
   static const durationText = "Duration";
   static const helloText = "Hello,";
   static const searchHintText = "Search Course";

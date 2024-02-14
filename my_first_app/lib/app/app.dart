@@ -5,7 +5,6 @@ import 'package:my_first_app/ui/views/startup/startup_view.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:my_first_app/ui/views/login/login_view.dart';
-import 'package:my_first_app/ui/views/responder_sign_up/responder_sign_up_view.dart';
 import 'package:my_first_app/ui/views/responder_homepage/responder_homepage_view.dart';
 
 import '../services/authentication_service.dart';
@@ -16,6 +15,7 @@ import 'package:my_first_app/ui/views/user_sign_up/user_sign_up_view.dart';
 import 'package:my_first_app/ui/views/message_view/message_view_view.dart';
 import 'package:my_first_app/ui/views/forgot_password_view/forgot_password_view_view.dart';
 import 'package:my_first_app/ui/views/profile_view/profile_view_view.dart';
+
 // @stacked-import
 
 @StackedApp(
@@ -23,12 +23,12 @@ import 'package:my_first_app/ui/views/profile_view/profile_view_view.dart';
     MaterialRoute(page: HomeView),
     MaterialRoute(page: StartupView),
     MaterialRoute(page: LoginView),
-    MaterialRoute(page: ResponderSignUpView),
     MaterialRoute(page: ResponderHomepageView),
     MaterialRoute(page: UserSignUpView),
     MaterialRoute(page: MessageViewView),
     MaterialRoute(page: ForgotPasswordViewView),
     MaterialRoute(page: ProfileViewView),
+    
 // @stacked-route
   ],
   dependencies: [

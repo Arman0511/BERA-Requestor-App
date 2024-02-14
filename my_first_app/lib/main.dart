@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_first_app/app/app.bottomsheets.dart';
 import 'package:my_first_app/app/app.dialogs.dart';
@@ -23,7 +24,8 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalNotifications.init();
+  
+  await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator(environment: Environment.prod);
   setupDialogUi();
@@ -40,9 +42,9 @@ Future<void> main() async {
   });
   //listen to background notifications
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
-  PushNotifications.init();
+  // PushNotifications.init();
 
-  runApp(const MainApp());
+  runApp(const MainApp());  
 }
 
 class MainApp extends StatelessWidget {
