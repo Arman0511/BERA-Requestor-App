@@ -56,52 +56,52 @@ class HomeView extends StackedView<HomeViewModel> {
                         margin: EdgeInsets.symmetric(vertical: 30),
                         width: 300,
                         height: 473,
-                       
                         child: Column(
                           children: <Widget>[
-            Material(
-              shape: const CircleBorder(),
-              elevation: 4.0, // Adjust the elevation for a shadow effect
-              color:
-                  Colors.red, // You can change the color to match your design
-              child: InkWell(
-                onTap: viewModel.helpPressed,
-                child: Container(
-                  width: 200.0,
-                  height: 200.0,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    AppConstants.helpText,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              child: AppButton2(
-                title: AppConstants.medText,
-                onClick: viewModel.medPressed,
-                isSelected: viewModel.btnMedSelected,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              child: AppButton2(
-                title: AppConstants.fireText,
-                onClick: viewModel.firePressed,
-                isSelected: viewModel.btnFireSelected,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              child: AppButton2(
-                title: AppConstants.policeText,
-                onClick: viewModel.policePressed,
-                isSelected: viewModel.btnPoliceSelected,
-              ),
-            ),
-          ],
+                            Material(
+                              shape: const CircleBorder(),
+                              elevation:
+                                  4.0, // Adjust the elevation for a shadow effect
+                              color: Colors
+                                  .red, // You can change the color to match your design
+                              child: InkWell(
+                                onTap: viewModel.helpPressed,
+                                child: Container(
+                                  width: 200.0,
+                                  height: 200.0,
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    AppConstants.helpText,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              child: AppButton2(
+                                title: AppConstants.medText,
+                                onClick: viewModel.medPressed,
+                                isSelected: viewModel.btnMedSelected,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              child: AppButton2(
+                                title: AppConstants.fireText,
+                                onClick: viewModel.firePressed,
+                                isSelected: viewModel.btnFireSelected,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              child: AppButton2(
+                                title: AppConstants.policeText,
+                                onClick: viewModel.policePressed,
+                                isSelected: viewModel.btnPoliceSelected,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -191,16 +191,13 @@ class HomeView extends StackedView<HomeViewModel> {
                   ),
                   label: AppConstants.sendText,
                 ),
-                
-                
-                
               ],
             ),
           ),
         ],
       ),
     );
-    
+
     // Scaffold(
     //   appBar: AppBar(
     //     title: const Text('Emergency App'),
@@ -269,4 +266,4 @@ class HomeView extends StackedView<HomeViewModel> {
     super.onViewModelReady(viewModel);
     viewModel.initState();
   }
-} 
+}

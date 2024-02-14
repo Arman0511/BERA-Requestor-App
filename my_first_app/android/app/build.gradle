@@ -29,7 +29,6 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     buildToolsVersion "34.0.0"
-    namespace 'com.example.notificationpermissions'
     namespace "com.example.my_first_app"
     compileSdkVersion 34
     ndkVersion "26.1.10909125"
