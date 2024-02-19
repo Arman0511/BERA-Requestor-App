@@ -1,5 +1,8 @@
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:my_first_app/app/app.router.dart';
+import 'package:my_first_app/methods/common_methods.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
@@ -17,6 +20,11 @@ class UserSignUpViewModel extends BaseViewModel {
   final _authenticationService = locator<AuthenticationService>();
   final _navigatorService = locator<NavigationService>();
   final _snackBarService = locator<SnackbarService>();
+  CommonMethods cmethods = CommonMethods();
+
+   void checkifNetworkIsAvailable(){
+     cmethods.checkConnectivity();
+  }
 
   bool obscureText = true;
 
@@ -31,6 +39,7 @@ class UserSignUpViewModel extends BaseViewModel {
       _snackBarService.showSnackbar(message: verifyForm);
     } else {
       setBusy(true);
+      checkifNetworkIsAvailable();
       final response = await _authenticationService.signup(
         nameTextController.text,
         emailTextController.text,

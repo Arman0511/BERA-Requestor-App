@@ -24,9 +24,6 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp();
-  WidgetsFlutterBinding.ensureInitialized();
   await setupLocator(environment: Environment.prod);
   setupDialogUi();
   setupBottomSheetUi();

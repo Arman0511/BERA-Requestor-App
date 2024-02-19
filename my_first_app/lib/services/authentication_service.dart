@@ -4,5 +4,5 @@ import '../exception/app_exception.dart';
 
 abstract interface class AuthenticationService {
   Future<Either<AppException, None>> signup(
-      String name, String email, String password);
+      String name, String email, String password, String text);
 }

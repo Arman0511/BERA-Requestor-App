@@ -16,6 +16,8 @@ import 'user_sign_up_viewmodel.dart';
 class UserSignUpView extends StackedView<UserSignUpViewModel> {
   const UserSignUpView({Key? key}) : super(key: key);
 
+ 
+
   @override
   Widget builder(
     BuildContext context,
@@ -83,11 +85,7 @@ class UserSignUpView extends StackedView<UserSignUpViewModel> {
             controller: viewModel.passwordTextController,
             label: AppConstants.passwordText,
           ),
-          AppPasswordTextField(
-            controller: viewModel.passwordTextController,
-            label: AppConstants.confirmPassText,
-          ),
-          App2Button(text: AppConstants.createText, onClick: () {})
+          App2Button(text: AppConstants.createText, onClick: viewModel.signupPressed,)
         ],
       ),
     ));
@@ -98,4 +96,6 @@ class UserSignUpView extends StackedView<UserSignUpViewModel> {
     BuildContext context,
   ) =>
       UserSignUpViewModel();
+
+  
 }

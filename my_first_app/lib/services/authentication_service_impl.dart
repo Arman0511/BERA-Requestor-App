@@ -23,6 +23,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
       UserCredential credential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
+        
       );
 
       if (credential.user == null) {
