@@ -18,7 +18,7 @@ class AuthenticationServiceImpl implements AuthenticationService {
 
   @override
   Future<Either<AppException, None>> signup(
-      String name, String email, String password) async {
+      String name, String email, String password, String phoneNum) async {
     try {
       UserCredential credential = await auth.createUserWithEmailAndPassword(
         email: email,

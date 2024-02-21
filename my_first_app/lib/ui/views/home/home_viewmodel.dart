@@ -53,10 +53,6 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> helpPressed() async {
-    // LocalNotifications.showSimpleNotification(
-    //     title: "Simple Notification",
-    //     body: "This is a simple notification",
-    //     payload: "This is a simple data");
 
     if (btnFireSelected == false &&
         btnMedSelected == false &&

@@ -34,6 +34,7 @@ class _GamePasswordTextFieldState extends State<AppPasswordTextField> {
               ]),
           child: TextField(
             keyboardType: TextInputType.visiblePassword,
+            controller: widget.controller,
             obscureText: widget.isObscure,
             decoration: InputDecoration(
               fillColor: AppColor.primaryBackgroundColor,

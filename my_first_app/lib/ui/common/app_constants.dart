@@ -1,6 +1,8 @@
 class AppConstants {
   static const noInternetText = "Your Internet is not available, Check your Connection and Try Again";
   static const sendText = "Send Photo";
+  static const mapsText = "Map";
+
   static const welcomeText = "Welcome To BERA";
   static const emailText = "Email";
   static const passwordText = "Password";

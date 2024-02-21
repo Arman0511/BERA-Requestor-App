@@ -9,7 +9,6 @@ import 'package:my_first_app/ui/views/responder_homepage/responder_homepage_view
 
 import '../services/authentication_service.dart';
 import '../services/authentication_service_impl.dart';
-import '../services/authentication_service_mock.dart';
 import '../services/shared_pref_service.dart';
 import 'package:my_first_app/ui/views/user_sign_up/user_sign_up_view.dart';
 import 'package:my_first_app/ui/views/message_view/message_view_view.dart';
@@ -37,10 +36,7 @@ import 'package:my_first_app/ui/views/profile_view/profile_view_view.dart';
     LazySingleton(classType: NavigationService),
     LazySingleton(classType: SnackbarService),
 
-    LazySingleton(
-        environments: {Environment.dev},
-        classType: AuthenticationServiceMock,
-        asType: AuthenticationService),
+   
     LazySingleton(
         environments: {Environment.prod},
         classType: AuthenticationServiceImpl,

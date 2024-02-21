@@ -8,21 +8,24 @@ import 'package:my_first_app/app/app.dialogs.dart';
 import 'package:my_first_app/app/app.locator.dart';
 import 'package:my_first_app/app/app.router.dart';
 import 'package:my_first_app/notification_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:relative_time/relative_time.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'firebase_options.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
-//function to listen to background changes
-
-Future _firebaseBackgroundMessage(RemoteMessage message) async {
-  if (message.notification != null) {
-    print("Some Notification Received");
-  }
-}
-
 Future<void> main() async {
+
+  await Permission.locationWhenInUse.isDenied.then((valueOfPermission)
+  {
+      if(valueOfPermission)
+      {
+        Permission.locationWhenInUse.request();
+      }
+  });
+
+
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator(environment: Environment.prod);
   setupDialogUi();
@@ -30,20 +33,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // on background notification tapped
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (message.notification != null) {
-      print("Bacground Notification Tapped");
-      navigatorKey.currentState!.pushNamed("/message", arguments: message);
-    }
-  });
-  //listen to background notifications
-  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
-  // PushNotifications.init();
 
   runApp(const MainApp());  
 }
-
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 

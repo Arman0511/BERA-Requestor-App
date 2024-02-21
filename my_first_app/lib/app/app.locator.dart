@@ -14,7 +14,6 @@ import 'package:stacked_shared/stacked_shared.dart';
 
 import '../services/authentication_service.dart';
 import '../services/authentication_service_impl.dart';
-import '../services/authentication_service_mock.dart';
 
 final locator = StackedLocator.instance;
 
@@ -32,9 +31,5 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => SnackbarService());
   locator.registerLazySingleton<AuthenticationService>(
-      () => AuthenticationServiceMock(),
-      registerFor: {"dev"});
-  locator.registerLazySingleton<AuthenticationService>(
-      () => AuthenticationServiceImpl(),
-      registerFor: {"prod"});
+      () => AuthenticationServiceImpl());
 }

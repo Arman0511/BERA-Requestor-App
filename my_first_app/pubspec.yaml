@@ -29,6 +29,8 @@ dependencies:
   http: ^1.2.0
   app_settings: ^5.1.1
   connectivity_plus: ^5.0.2
+  google_maps_flutter: ^2.5.3
+  permission_handler: ^11.3.0
   
  
   
@@ -46,4 +48,5 @@ flutter:
   assets:
     - assets/svg/
     - assets/png/
+    - themes/
   

@@ -22,10 +22,6 @@ class UserSignUpViewModel extends BaseViewModel {
   final _snackBarService = locator<SnackbarService>();
   CommonMethods cmethods = CommonMethods();
 
-   void checkifNetworkIsAvailable(){
-     cmethods.checkConnectivity();
-  }
-
   bool obscureText = true;
 
   void visibility() {
@@ -33,31 +29,40 @@ class UserSignUpViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  Future<void> signupPressed() async {
-    final verifyForm = validateForm();
-    if (verifyForm != null) {
-      _snackBarService.showSnackbar(message: verifyForm);
-    } else {
-      setBusy(true);
-      checkifNetworkIsAvailable();
-      final response = await _authenticationService.signup(
-        nameTextController.text,
-        emailTextController.text,
-        passwordTextController.text,
-      );
 
-      setBusy(false);
+Future<void> signupPressed() async {
+  // Retrieve the current BuildContext
+  BuildContext? context = locator<NavigationService>().navigatorKey?.currentContext!;
 
-      response.fold((l) {
-        _snackBarService.showSnackbar(message: l.message);
-      }, (r) {
-        _snackBarService.showSnackbar(
-            message: AppConstants.choosePaymentMethodText,
-            duration: const Duration(seconds: 2));
-        _navigatorService.replaceWithLoginView();
-      });
-    }
+  // Check connectivity
+  await cmethods.checkConnectivity(context!);
+
+  final verifyForm = validateForm();
+  if (verifyForm != null) {
+    _snackBarService.showSnackbar(message: verifyForm);
+  } else {
+    setBusy(true);
+    final response = await _authenticationService.signup(
+      nameTextController.text,
+      emailTextController.text,
+      passwordTextController.text,
+      phoneNumTextController.text,
+    );
+
+    setBusy(false);
+
+    response.fold((l) {
+      _snackBarService.showSnackbar(message: l.message);
+    }, (r) {
+      _snackBarService.showSnackbar(
+          message: AppConstants.choosePaymentMethodText,
+          duration: const Duration(seconds: 2));
+      _navigatorService.replaceWithLoginView();
+    });
   }
+}
+
+
 
   void goToLoginPage() {
     _navigatorService.replaceWithLoginView();
