@@ -45,6 +45,7 @@ class HomeView extends StackedView<HomeViewModel> {
           ),
           Expanded(
             child: PageView(
+              pageSnapping: false,
               controller: viewModel.pageController,
               physics: const AlwaysScrollableScrollPhysics(),
               onPageChanged: viewModel.onPageChanged,
@@ -107,35 +108,16 @@ class HomeView extends StackedView<HomeViewModel> {
                     ],
                   ),
                 ),
-                // LessonsView(),
-                // PlayView(),
                 SingleChildScrollView(
                   child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          // GameChip(label: 'All'),
-                          // GameChip(label: 'Completed'),
-                          // GameChip(label: 'Incomplete'),
-                        ],
+                        children: [],
                       ),
-                      // AchievementCard(
-                      //   label: 'Achievement 1',
-                      //   isComplete: true,
-                      // ),
-                      // AchievementCard(
-                      //   label: 'Achievement 2',
-                      //   isComplete: false,
-                      // ),
-                      // AchievementCard(
-                      //   label: 'Achievement 3',
-                      //   isComplete: false,
-                      // ),
                     ],
                   ),
                 ),
-                // PeopleView(),
               ],
             ),
           ),
@@ -197,61 +179,6 @@ class HomeView extends StackedView<HomeViewModel> {
         ],
       ),
     );
-
-    // Scaffold(
-    //   appBar: AppBar(
-    //     title: const Text('Emergency App'),
-    //   ),
-    //   body: Center(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: <Widget>[
-    //         Material(
-    //           shape: const CircleBorder(),
-    //           elevation: 4.0, // Adjust the elevation for a shadow effect
-    //           color:
-    //               Colors.red, // You can change the color to match your design
-    //           child: InkWell(
-    //             onTap: viewModel.helpPressed,
-    //             child: Container(
-    //               width: 200.0,
-    //               height: 200.0,
-    //               alignment: Alignment.center,
-    //               child: const Text(
-    //                 AppConstants.helpText,
-    //                 style: TextStyle(color: Colors.white),
-    //               ),
-    //             ),
-    //           ),
-    //         ),
-    //         const SizedBox(height: 20),
-    //         SizedBox(
-    //           child: AppButton2(
-    //             title: AppConstants.medText,
-    //             onClick: viewModel.medPressed,
-    //             isSelected: viewModel.btnMedSelected,
-    //           ),
-    //         ),
-    //         const SizedBox(height: 20),
-    //         SizedBox(
-    //           child: AppButton2(
-    //             title: AppConstants.fireText,
-    //             onClick: viewModel.firePressed,
-    //             isSelected: viewModel.btnFireSelected,
-    //           ),
-    //         ),
-    //         const SizedBox(height: 20),
-    //         SizedBox(
-    //           child: AppButton2(
-    //             title: AppConstants.policeText,
-    //             onClick: viewModel.policePressed,
-    //             isSelected: viewModel.btnPoliceSelected,
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   @override
