@@ -16,26 +16,33 @@ import 'firebase_options.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
-
-  await Permission.locationWhenInUse.isDenied.then((valueOfPermission)
-  {
-      if(valueOfPermission)
-      {
-        Permission.locationWhenInUse.request();
-      }
-  });
-
-
   WidgetsFlutterBinding.ensureInitialized();
-  await setupLocator(environment: Environment.prod);
-  setupDialogUi();
-  setupBottomSheetUi();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
-  runApp(const MainApp());  
+  // Request location permission if not granted
+  final locationPermission = await Permission.locationWhenInUse.status;
+  if (locationPermission.isDenied) {
+    await Permission.locationWhenInUse.request();
+  }
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    print('Error initializing Firebase: $e');
+  }
+
+  // Handle background notification taps
+  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      print("Background Notification Tapped");
+      navigatorKey.currentState!.pushNamed("/message", arguments: message);
+    }
+  });
+  setupLocator();
+  runApp(const MainApp());
 }
+
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 

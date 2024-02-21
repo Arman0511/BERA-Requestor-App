@@ -41,7 +41,7 @@ class UserProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'Level 1',
+                'Responder',
                 style: TextStyle(
                   color: AppColor.secondaryColor,
                   fontWeight: FontWeight.bold,
