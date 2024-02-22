@@ -1,4 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_first_app/app/app.bottomsheets.dart';
 import 'package:my_first_app/app/app.dialogs.dart';
 import 'package:my_first_app/app/app.locator.dart';
@@ -15,7 +22,9 @@ class HomeViewModel extends BaseViewModel {
   final _bottomSheetService = locator<BottomSheetService>();
   final _snackbarService = locator<SnackbarService>();
   NotificationService notificationService = NotificationService();
-
+  Position? currentPositionOfUser;
+  final Completer<GoogleMapController> googleMapCompleterController = Completer<GoogleMapController>();
+  GoogleMapController? controllerGoogleMap;
   // final LocalNotifications _localNotifications = LocalNotifications();
   final _navigationService = locator<NavigationService>();
   int currentPageIndex = 0;
@@ -26,18 +35,59 @@ class HomeViewModel extends BaseViewModel {
 
   get counterLabel => null;
 
+  getCurrentLiveLocationOfUser()async
+  {
+    Position positionOfUser = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
+    currentPositionOfUser = positionOfUser;
+
+    LatLng positionOfUserInLatLang = LatLng(currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
+    CameraPosition cameraPosition = CameraPosition(target: positionOfUserInLatLang, zoom: 15);
+    controllerGoogleMap!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    rebuildUi();
+    print("Created Map");
+  }
+
   void initState() {
     notificationService.requestNotificationPermission();
   }
 
+  void updateMapTheme(GoogleMapController controller){
+getJsonFileFromThemes("themes/night_style.json").then((value)=> setGoogleMapStyle(value, controller));
+}
+
+setGoogleMapStyle(String googleMapStyle, GoogleMapController controller)
+{
+  controller.setMapStyle(googleMapStyle);
+}
+
+Future<String> getJsonFileFromThemes(String mapStylePath) async
+{
+  ByteData byteData = await rootBundle.load(mapStylePath);
+  var list = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+  return utf8.decode(list);
+  
+}
+void mapCreated(GoogleMapController mapController){
+   controllerGoogleMap = mapController;
+   googleMapCompleterController.complete(controllerGoogleMap);
+   updateMapTheme(controllerGoogleMap!);
+   getCurrentLiveLocationOfUser();
+}
   void goToProfileView() {
     _navigationService.navigateToProfileViewView();
   }
 
   void onPageChanged(int index) {
-    currentPageIndex = index;
-    rebuildUi();
+  currentPageIndex = index;
+  rebuildUi();
+  if (index == 1) {
+    getCurrentLiveLocationOfUser();
+    if (controllerGoogleMap != null) {
+      updateMapTheme(controllerGoogleMap!);
+    }
   }
+}
+
 
   void onDestinationSelected(int index) {
     currentPageIndex = index;

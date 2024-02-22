@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:my_first_app/global/global_var.dart';
 import 'package:my_first_app/ui/custom_widget/app_body.dart';
 import 'package:my_first_app/ui/custom_widget/user_profile.dart';
 import 'package:stacked/stacked.dart';
@@ -45,9 +47,7 @@ class HomeView extends StackedView<HomeViewModel> {
           ),
           Expanded(
             child: PageView(
-              pageSnapping: false,
               controller: viewModel.pageController,
-              physics: const AlwaysScrollableScrollPhysics(),
               onPageChanged: viewModel.onPageChanged,
               children: [
                 SingleChildScrollView(
@@ -109,11 +109,18 @@ class HomeView extends StackedView<HomeViewModel> {
                   ),
                 ),
                 SingleChildScrollView(
-                  child: Column(
+                  child:Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [],
+                      Container(
+                        height: 400, // Set a specific height for the GoogleMap
+                        child: GoogleMap(
+                          
+                          mapType: MapType.normal,
+                          myLocationEnabled: true,
+                          initialCameraPosition: googlePlexInitialPosition,
+                          onMapCreated: viewModel.mapCreated,
+
+                        ),
                       ),
                     ],
                   ),
@@ -156,22 +163,22 @@ class HomeView extends StackedView<HomeViewModel> {
                   ),
                   selectedIcon: Icon(
                     Icons.home,
-                    color: Colors.red,
+                    color: const Color.fromARGB(255, 54, 244, 216),
                     size: 40,
                   ),
                   label: AppConstants.HomeText,
                 ),
                 NavigationDestination(
                   icon: Icon(
-                    Icons.photo,
+                    Icons.map,
                     size: 30,
                   ),
                   selectedIcon: Icon(
-                    Icons.photo,
-                    color: Colors.red,
+                    Icons.map,
+                    color: const Color.fromARGB(255, 54, 244, 216),
                     size: 40,
                   ),
-                  label: AppConstants.sendText,
+                  label: AppConstants.mapsText,
                 ),
               ],
             ),
