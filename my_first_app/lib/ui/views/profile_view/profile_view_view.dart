@@ -17,78 +17,95 @@ import 'profile_view_viewmodel.dart';
 class ProfileViewView extends StackedView<ProfileViewViewModel> {
   const ProfileViewView({Key? key}) : super(key: key);
 
-ImageProvider getImage() {
-  if(imageFile == null) {
+  ImageProvider getImage() {
+    if (imageFile == null) {
       return AssetImage(AppPng.AppAvatarPath);
-  }
-  else {
+    } else {
       return FileImage(File(imageFile!.path));
+    }
   }
-}
+
   @override
   Widget builder(
     BuildContext context,
     ProfileViewViewModel viewModel,
     Widget? child,
   ) {
-    return AppBody(
-        body: SingleChildScrollView(
-      child: Column(
-        children: [
-          AppBar(),
-          Row(
-            children: [
-              Container(
-  decoration: BoxDecoration(
-    border: Border.all(
-      color: Colors.black,
-      style: BorderStyle.solid,
-      width: 2,
-    ),
-    borderRadius: BorderRadius.circular(100),
-  ),
-  child: CircleAvatar(
-    radius: 50,
-    backgroundImage: getImage(),
-    backgroundColor: AppColor.secondaryColor,
-  ),
-),
-
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppTextButton(title: "Change Picture", onClick:viewModel.chooseImageFromGallery,),
-                  AppTextButton(title: "View Picture", onClick: () {}),
-                ],
-              )
-            ],
-          ),
-          EditProfileCard(
-            text: 'Armando',
-            onClick: () {},
-            label: 'Name',
-          ),
-          EditProfileCard(
-            text: 'armando.jumawid@gmail.com',
-            onClick: () {},
-            label: 'Email',
-          ),
-          EditProfileCard(
-            text: 'Change Password***',
-            onClick: () {},
-            label: 'Password',
-          ),
-          verticalSpaceMedium,
-          App2Button(text: 'Log out', onClick: () {})
-        ],
+    return Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: getImage(),
+              backgroundColor: AppColor.secondaryColor,
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Change Picture"),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog
+                              viewModel.chooseImageFromGallery();
+                            },
+                            child: Text("From Gallery"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog
+                              //viewModel.chooseImageFromCamera();
+                            },
+                            child: Text("From Camera"),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+              child: Text("Change Picture"),
+            ),
+            SizedBox(height: 20.0),
+            TextButton(
+              onPressed: () {},
+              child: Text("View Picture"),
+            ),
+            SizedBox(height: 20.0),
+            EditProfileCard(
+              text: 'Armando',
+              onClick: () {},
+              label: 'Name',
+            ),
+            EditProfileCard(
+              text: 'armando.jumawid@gmail.com',
+              onClick: () {},
+              label: 'Email',
+            ),
+            EditProfileCard(
+              text: 'Change Password***',
+              onClick: () {},
+              label: 'Password',
+            ),
+            SizedBox(height: 20.0),
+            App2Button(text: 'Log out', onClick: () {}),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   @override
-  ProfileViewViewModel viewModelBuilder(
-    BuildContext context,
-  ) =>
+  ProfileViewViewModel viewModelBuilder(BuildContext context) =>
       ProfileViewViewModel();
 }
