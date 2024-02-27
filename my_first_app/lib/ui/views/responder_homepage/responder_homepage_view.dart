@@ -35,7 +35,9 @@ class ResponderHomepageView extends StackedView<ResponderHomepageViewModel> {
               children: [
                 GestureDetector(
                   onTap: viewModel.goToProfileView,
-                  child: UserProfile(),
+                  child: UserProfile(
+                    name: '',
+                  ),
                 ),
               ],
             ),
@@ -87,8 +89,7 @@ class ResponderHomepageView extends StackedView<ResponderHomepageViewModel> {
                       ),
                     ],
                   ),
-                  ),
-
+                ),
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_first_app/ui/constants/app_png.dart';
 import 'package:my_first_app/ui/custom_widget/app2_button.dart';
 import 'package:my_first_app/ui/custom_widget/app_body.dart';
+import 'package:my_first_app/ui/custom_widget/app_button.dart';
 import 'package:my_first_app/ui/custom_widget/app_image.dart';
 import 'package:my_first_app/ui/custom_widget/app_password_textfield.dart';
 import 'package:my_first_app/ui/custom_widget/app_textbutton.dart';
@@ -44,9 +45,10 @@ class LoginView extends StackedView<LoginViewModel> {
             const SizedBox(
               height: 10,
             ),
-            App2Button(
+            AppButton(
               text: AppConstants.loginText,
               onClick: viewModel.logIn,
+              isSelected: false,
             ),
             const SizedBox(
               height: 20,

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:my_first_app/app/app.router.dart';
 import 'package:my_first_app/methods/common_methods.dart';
@@ -29,40 +27,38 @@ class UserSignUpViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  Future<void> signupPressed() async {
+    // Retrieve the current BuildContext
+    BuildContext? context =
+        locator<NavigationService>().navigatorKey?.currentContext!;
 
-Future<void> signupPressed() async {
-  // Retrieve the current BuildContext
-  BuildContext? context = locator<NavigationService>().navigatorKey?.currentContext!;
+    // Check connectivity
+    await cmethods.checkConnectivity(context!);
 
-  // Check connectivity
-  await cmethods.checkConnectivity(context!);
+    final verifyForm = validateForm();
+    if (verifyForm != null) {
+      _snackBarService.showSnackbar(message: verifyForm);
+    } else {
+      setBusy(true);
+      final response = await _authenticationService.signup(
+        nameTextController.text,
+        emailTextController.text,
+        passwordTextController.text,
+        phoneNumTextController.text,
+      );
 
-  final verifyForm = validateForm();
-  if (verifyForm != null) {
-    _snackBarService.showSnackbar(message: verifyForm);
-  } else {
-    setBusy(true);
-    final response = await _authenticationService.signup(
-      nameTextController.text,
-      emailTextController.text,
-      passwordTextController.text,
-      phoneNumTextController.text,
-    );
+      setBusy(false);
 
-    setBusy(false);
-
-    response.fold((l) {
-      _snackBarService.showSnackbar(message: l.message);
-    }, (r) {
-      _snackBarService.showSnackbar(
-          message: AppConstants.choosePaymentMethodText,
-          duration: const Duration(seconds: 2));
-      _navigatorService.replaceWithLoginView();
-    });
+      response.fold((l) {
+        _snackBarService.showSnackbar(message: l.message);
+      }, (r) {
+        _snackBarService.showSnackbar(
+            message: AppConstants.choosePaymentMethodText,
+            duration: const Duration(seconds: 2));
+        _navigatorService.replaceWithLoginView();
+      });
+    }
   }
-}
-
-
 
   void goToLoginPage() {
     _navigatorService.replaceWithLoginView();

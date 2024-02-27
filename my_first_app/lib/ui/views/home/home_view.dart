@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:my_first_app/global/global_var.dart';
+import 'package:my_first_app/ui/custom_widget/app2_button.dart';
 import 'package:my_first_app/ui/custom_widget/app_body.dart';
 import 'package:my_first_app/ui/custom_widget/user_profile.dart';
 import 'package:stacked/stacked.dart';
-import 'package:my_first_app/ui/common/app_colors.dart';
 import 'package:my_first_app/ui/common/ui_helpers.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../common/app_constants.dart';
 import '../../custom_widget/app_button.dart';
@@ -37,7 +36,10 @@ class HomeView extends StackedView<HomeViewModel> {
               children: [
                 GestureDetector(
                   onTap: viewModel.goToProfileView,
-                  child: UserProfile(),
+                  child: UserProfile(
+                    name: viewModel.user.name,
+                    imagePath: viewModel.user.image,
+                  ),
                 ),
               ],
             ),
@@ -56,7 +58,7 @@ class HomeView extends StackedView<HomeViewModel> {
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 30),
                         width: 300,
-                        height: 473,
+                        height: 600,
                         child: Column(
                           children: <Widget>[
                             Material(
@@ -80,24 +82,25 @@ class HomeView extends StackedView<HomeViewModel> {
                             ),
                             const SizedBox(height: 20),
                             SizedBox(
-                              child: AppButton2(
-                                title: AppConstants.medText,
+                              child: App2Button(
+                                text: AppConstants.medText,
                                 onClick: viewModel.medPressed,
                                 isSelected: viewModel.btnMedSelected,
+                                
                               ),
                             ),
                             const SizedBox(height: 20),
                             SizedBox(
-                              child: AppButton2(
-                                title: AppConstants.fireText,
+                              child: App2Button(
+                                text: AppConstants.fireText,
                                 onClick: viewModel.firePressed,
                                 isSelected: viewModel.btnFireSelected,
                               ),
                             ),
                             const SizedBox(height: 20),
                             SizedBox(
-                              child: AppButton2(
-                                title: AppConstants.policeText,
+                              child: App2Button(
+                                text: AppConstants.policeText,
                                 onClick: viewModel.policePressed,
                                 isSelected: viewModel.btnPoliceSelected,
                               ),
@@ -109,17 +112,15 @@ class HomeView extends StackedView<HomeViewModel> {
                   ),
                 ),
                 SingleChildScrollView(
-                  child:Column(
+                  child: Column(
                     children: [
                       Container(
                         height: 400, // Set a specific height for the GoogleMap
                         child: GoogleMap(
-                          
                           mapType: MapType.normal,
                           myLocationEnabled: true,
                           initialCameraPosition: googlePlexInitialPosition,
                           onMapCreated: viewModel.mapCreated,
-
                         ),
                       ),
                     ],
@@ -196,8 +197,6 @@ class HomeView extends StackedView<HomeViewModel> {
 
   @override
   void onViewModelReady(HomeViewModel viewModel) {
-    // TODO: implement onViewModelReady
-    super.onViewModelReady(viewModel);
-    viewModel.initState();
+    viewModel.init();
   }
 }

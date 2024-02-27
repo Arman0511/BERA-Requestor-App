@@ -23,6 +23,7 @@ mixin _$User {
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get uid => throw _privateConstructorUsedError;
+  String? get image => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -34,7 +35,7 @@ abstract class $UserCopyWith<$Res> {
   factory $UserCopyWith(User value, $Res Function(User) then) =
       _$UserCopyWithImpl<$Res, User>;
   @useResult
-  $Res call({String name, String email, String uid});
+  $Res call({String name, String email, String uid, String? image});
 }
 
 /// @nodoc
@@ -53,6 +54,7 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
     Object? name = null,
     Object? email = null,
     Object? uid = null,
+    Object? image = freezed,
   }) {
     return _then(_value.copyWith(
       name: null == name
@@ -67,6 +69,10 @@ class _$UserCopyWithImpl<$Res, $Val extends User>
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -78,7 +84,7 @@ abstract class _$$UserImplCopyWith<$Res> implements $UserCopyWith<$Res> {
       __$$UserImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String name, String email, String uid});
+  $Res call({String name, String email, String uid, String? image});
 }
 
 /// @nodoc
@@ -94,6 +100,7 @@ class __$$UserImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = null,
     Object? uid = null,
+    Object? image = freezed,
   }) {
     return _then(_$UserImpl(
       name: null == name
@@ -108,6 +115,10 @@ class __$$UserImplCopyWithImpl<$Res>
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
+      image: freezed == image
+          ? _value.image
+          : image // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -116,7 +127,7 @@ class __$$UserImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$UserImpl implements _User {
   const _$UserImpl(
-      {required this.name, required this.email, required this.uid});
+      {required this.name, required this.email, required this.uid, this.image});
 
   factory _$UserImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserImplFromJson(json);
@@ -127,10 +138,12 @@ class _$UserImpl implements _User {
   final String email;
   @override
   final String uid;
+  @override
+  final String? image;
 
   @override
   String toString() {
-    return 'User(name: $name, email: $email, uid: $uid)';
+    return 'User(name: $name, email: $email, uid: $uid, image: $image)';
   }
 
   @override
@@ -140,12 +153,13 @@ class _$UserImpl implements _User {
             other is _$UserImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
-            (identical(other.uid, uid) || other.uid == uid));
+            (identical(other.uid, uid) || other.uid == uid) &&
+            (identical(other.image, image) || other.image == image));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, name, email, uid);
+  int get hashCode => Object.hash(runtimeType, name, email, uid, image);
 
   @JsonKey(ignore: true)
   @override
@@ -165,7 +179,8 @@ abstract class _User implements User {
   const factory _User(
       {required final String name,
       required final String email,
-      required final String uid}) = _$UserImpl;
+      required final String uid,
+      final String? image}) = _$UserImpl;
 
   factory _User.fromJson(Map<String, dynamic> json) = _$UserImpl.fromJson;
 
@@ -175,6 +190,8 @@ abstract class _User implements User {
   String get email;
   @override
   String get uid;
+  @override
+  String? get image;
   @override
   @JsonKey(ignore: true)
   _$$UserImplCopyWith<_$UserImpl> get copyWith =>

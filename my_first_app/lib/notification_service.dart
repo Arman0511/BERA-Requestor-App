@@ -75,24 +75,22 @@ class NotificationService {
   //   final token = await _firebaseMessaging.getToken();
   //   print("device token: $token");
   // }
-  void requestNotificationPermission()async{
+  void requestNotificationPermission() async {
     NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
+        alert: true,
         announcement: true,
         badge: true,
         carPlay: true,
         criticalAlert: true,
         provisional: true,
         sound: true);
-    
-    if(settings.authorizationStatus == AuthorizationStatus.authorized){
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User Granted Permission');
-    }else if(settings.authorizationStatus == AuthorizationStatus.authorized){
-       print('User Granted Provisional Permission');
-    }else{
-      
-       print('User Denied Permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User Granted Provisional Permission');
+    } else {
+      print('User Denied Permission');
     }
   }
-
 }

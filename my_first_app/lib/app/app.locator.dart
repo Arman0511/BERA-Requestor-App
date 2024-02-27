@@ -6,14 +6,13 @@
 
 // ignore_for_file: public_member_api_docs, implementation_imports, depend_on_referenced_packages
 
+import 'package:my_first_app/services/authentication_service.dart';
+import 'package:my_first_app/services/shared_pref_service.dart';
 import 'package:stacked_services/src/bottom_sheet/bottom_sheet_service.dart';
 import 'package:stacked_services/src/dialog/dialog_service.dart';
 import 'package:stacked_services/src/navigation/navigation_service.dart';
 import 'package:stacked_services/src/snackbar/snackbar_service.dart';
 import 'package:stacked_shared/stacked_shared.dart';
-
-import '../services/authentication_service.dart';
-import '../services/authentication_service_impl.dart';
 
 final locator = StackedLocator.instance;
 
@@ -30,6 +29,8 @@ Future<void> setupLocator({
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => NavigationService());
   locator.registerLazySingleton(() => SnackbarService());
-  locator.registerLazySingleton<AuthenticationService>(
-      () => AuthenticationServiceImpl());
+  locator.registerLazySingleton(() => AuthenticationService());
+  locator.registerLazySingleton(() => SharedPreferenceService());
+
+
 }

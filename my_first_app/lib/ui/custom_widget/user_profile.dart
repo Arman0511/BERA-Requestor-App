@@ -3,7 +3,10 @@ import 'package:my_first_app/ui/constants/app_png.dart';
 import 'package:flutter/material.dart';
 
 class UserProfile extends StatelessWidget {
-  const UserProfile({super.key});
+  const UserProfile({super.key, required this.name, this.imagePath});
+
+  final String name;
+  final String? imagePath;
 
   @override
   Widget build(BuildContext context) {
