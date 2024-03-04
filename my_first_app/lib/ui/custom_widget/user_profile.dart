@@ -8,6 +8,11 @@ class UserProfile extends StatelessWidget {
   final String name;
   final String? imagePath;
 
+ImageProvider getImage() {
+    if (imagePath == null) return const AssetImage(AppPng.AppAvatarPath);
+    return NetworkImage(imagePath!);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,7 +29,7 @@ class UserProfile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(50)),
             child: CircleAvatar(
               radius: 25,
-              backgroundImage: AssetImage(AppPng.AppAvatarPath),
+              backgroundImage: getImage(),
               backgroundColor: AppColor.secondaryColor,
             ),
           ),
@@ -35,7 +40,7 @@ class UserProfile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Armando',
+                name,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -44,7 +49,7 @@ class UserProfile extends StatelessWidget {
                 ),
               ),
               Text(
-                'Responder',
+                'Normal User',
                 style: TextStyle(
                   color: AppColor.secondaryColor,
                   fontWeight: FontWeight.bold,

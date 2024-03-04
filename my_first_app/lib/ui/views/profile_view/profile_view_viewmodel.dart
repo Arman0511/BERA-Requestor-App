@@ -121,4 +121,10 @@ void init() async {
     urlOfUploadedImage = await snapshot.ref.getDownloadURL();
     rebuildUi();
   }
+
+  @override
+  void dispose() {
+    streamSubscription?.cancel();
+    super.dispose();
+  }
 }
