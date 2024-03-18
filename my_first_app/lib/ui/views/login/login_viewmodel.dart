@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:my_first_app/app/app.bottomsheets.dart';
 import 'package:my_first_app/app/app.router.dart';
@@ -18,20 +20,27 @@ class LoginViewModel extends BaseViewModel with InputValidation {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  Future<void> logIn() async {
-    if (validateInput()) {
-      setBusy(true);
-      final response = await _authenticationService.login(
-          email: emailController.text, password: passwordController.text);
-      setBusy(false);
-      response.fold((l) {
-        showBottomSheet(l.message);
-      }, (user) async {
-        await _sharedPref.saveUser(user);
-        _navigationService.replaceWithHomeView();
+Future<void> logIn() async {
+  if (validateInput()) {
+    setBusy(true);
+    final response = await _authenticationService.login(
+        email: emailController.text, password: passwordController.text);
+    setBusy(false);
+    response.fold((l) {
+      showBottomSheet(l.message);
+    }, (user) async {
+      await _sharedPref.saveUser(user);
+      // Generate FCM token
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      // Update Firestore document with the FCM token and status
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'fcmToken': fcmToken,
+        'status': 'online',
       });
-    }
+      _navigationService.replaceWithHomeView();
+    });
   }
+}
   bool validateInput() {
     String? emailValidation = isValidEmail(emailController.text);
     String? passwordValidation = isValidPassword(passwordController.text);

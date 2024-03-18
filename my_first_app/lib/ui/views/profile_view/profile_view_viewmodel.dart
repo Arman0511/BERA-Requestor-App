@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -74,7 +75,10 @@ void init() async {
 
     response.fold((l) {
       showBottomSheet(l.message);
-    }, (r) {
+    }, (r) async {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'status': 'offline',
+      });
       _navigationService.popRepeated(1);
       _navigationService.replaceWithLoginView();
     });

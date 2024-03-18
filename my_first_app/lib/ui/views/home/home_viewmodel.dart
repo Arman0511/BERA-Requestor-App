@@ -3,21 +3,21 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:my_first_app/app/app.bottomsheets.dart';
-import 'package:my_first_app/app/app.dialogs.dart';
 import 'package:my_first_app/app/app.locator.dart';
 import 'package:my_first_app/app/app.router.dart';
 import 'package:my_first_app/model/user.dart';
 import 'package:my_first_app/notification_service.dart';
 import 'package:my_first_app/services/shared_pref_service.dart';
-import 'package:my_first_app/ui/common/app_strings.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:http/http.dart' as http;
+
 
 class HomeViewModel extends BaseViewModel {
   final PageController pageController = PageController(initialPage: 0);
@@ -33,6 +33,9 @@ class HomeViewModel extends BaseViewModel {
   // final LocalNotifications _localNotifications = LocalNotifications();
   final _navigationService = locator<NavigationService>();
   int currentPageIndex = 0;
+  final Map<MarkerId, Marker> _markers = {};
+  final double _radius = 1000; // 1 kilometer
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   bool btnMedSelected = false;
   bool btnFireSelected = false;
@@ -40,6 +43,8 @@ class HomeViewModel extends BaseViewModel {
 
   get counterLabel => null;
   late User user;
+  late Connectivity _connectivity;
+
 
   init() async {
     setBusy(true);
@@ -53,7 +58,180 @@ class HomeViewModel extends BaseViewModel {
     });
     setBusy(false);
   }
+
+UserStatusProvider() {
+    user = FirebaseAuth.instance.currentUser! as User;
+    _connectivity = Connectivity();
+    _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
+      _updateUserStatus(result);
+    });
+  }
+  Future<void> _updateUserStatus(ConnectivityResult result) async {
+    if (result == ConnectivityResult.none) {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'status': 'offline',
+      });
+    } else {
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'status': 'online',
+      });
+    }
+    }
   
+ Future<void> sendFcmNotification(String token, String message) async {
+  // Create a HTTP client
+  final http.Client httpClient = http.Client();
+
+  // Define the URL of the FCM API endpoint
+  const String url = 'https://fcm.googleapis.com/fcm/send';
+
+  // Define the headers of the request
+  final Map<String, String> headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I',
+  };
+
+  // Define the body of the request
+  final Map<String, dynamic> body = {
+    'to': token,
+    'notification': {
+      'body': message,
+      'title': 'New Notification',
+      'android': {
+        'notification': {
+          'priority': 'high',
+        },
+      },
+    },
+  };
+
+  // Send the request
+  final http.Response response = await httpClient.post(
+    Uri.parse(url),
+    headers: headers,
+    body: json.encode(body),
+  );
+
+  // Check the status code of the response
+  if (response.statusCode != 200) {
+    throw Exception('Failed to send FCM notification: ${response.statusCode}');
+  }
+
+  // Close the HTTP client
+  httpClient.close();
+}
+
+Future<void> helpPressed() async {
+  List<String> selectedConcerns = [];
+
+  if (btnFireSelected) {
+    selectedConcerns.add('Fire');
+  }
+  if (btnMedSelected) {
+    selectedConcerns.add('Medical');
+  }
+  if (btnPoliceSelected) {
+    selectedConcerns.add('Police');
+  }
+
+  if (selectedConcerns.isEmpty) {
+    _snackbarService.showSnackbar(
+        message: "Select Emergency Concern!",
+        duration: const Duration(seconds: 1));
+    return;
+  }
+
+  await saveConcernsToFirestore(selectedConcerns);
+
+  _snackbarService.showSnackbar(
+      message: "Rescue Coming!!", duration: const Duration(seconds: 2));
+
+  // Clear the selected concern buttons
+  btnMedSelected = false;
+  btnFireSelected = false;
+  btnPoliceSelected = false;
+  rebuildUi();
+  fetchUserLocations();
+
+  // Call the sendFcmNotification function with user token and message
+  // Assuming you have the user token and the message you want to send
+  // Replace 'userToken' and 'message' with appropriate values
+  try {
+    String token = 'cX1BeYfbTZ-j7369wuFmDE:APA91bHqQDXkhCelYcuqLNsdKJNGhgZJssRJUPfj8q_hQqUW0wvPgV0cVjBlp1mxlPKbSQASOyUF8EUe878CcTC62G2V3kQjV4lhPj8aLcZFnDsAklgIRMf-XobtZ_zD3fJzRtDNiggU'; // Replace with user token
+    String message = 'Naay Nangayo ug Tabang!!!'; // Replace with your message
+    await sendFcmNotification(token, message);
+    print('FCM notification sent successfully!');
+  } catch (error) {
+    print('Error sending FCM notification: $error');
+    // Handle error accordingly
+  }
+}
+
+
+void medPressed() {
+  btnMedSelected = !btnMedSelected;
+  rebuildUi();
+}
+
+void firePressed() {
+  btnFireSelected = !btnFireSelected;
+  rebuildUi();
+}
+
+void policePressed() {
+  btnPoliceSelected = !btnPoliceSelected;
+  rebuildUi();
+}
+
+Future<void> saveConcernsToFirestore(List<String> concerns) async {
+  try {
+    await init(); // Ensure user is initialized
+
+    final userConcernRef =
+        FirebaseFirestore.instance.collection('users').doc(user.uid);
+
+    // Update the 'concerns' field with the selected concerns without overwriting other fields
+    await userConcernRef.update({'concerns': FieldValue.arrayUnion(concerns)});
+    print('Concerns saved to Firestore successfully!');
+  } catch (error) {
+    print('Error saving concerns to Firestore: $error');
+    // Handle error accordingly
+  }
+}
+
+
+
+ Future<void> fetchUserLocations() async {
+    final QuerySnapshot<Map<String, dynamic>> usersSnapshot =
+        await _firestore.collection('users').get();
+
+    for (var doc in usersSnapshot.docs) {
+      final double latitude = doc.data()['latitude'];
+      final double longitude = doc.data()['longitude'];
+      final String userId = doc.id;
+
+      final LatLng userLocation = LatLng(latitude, longitude);
+      addMarker(userId, userLocation);
+        }
+
+    notifyListeners();
+  }
+
+ void addMarker(String userId, LatLng userLocation) {
+    final MarkerId markerId = MarkerId(userId);
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: userLocation,
+      infoWindow: InfoWindow(
+        title: 'User ID: $userId',
+        snippet: 'Location: ${userLocation.latitude}, ${userLocation.longitude}',
+      ),
+    );
+
+    _markers[markerId] = marker;
+  }
+
+
 Future<void> storeCurrentLocationOfUser() async {
   setBusy(true);
 
@@ -100,6 +278,7 @@ Future<void> storeCurrentLocationOfUser() async {
 
   void initState() {
     notificationService.requestNotificationPermission();
+    UserStatusProvider();
   }
 
   void updateMapTheme(GoogleMapController controller) {
@@ -122,6 +301,7 @@ Future<void> storeCurrentLocationOfUser() async {
     controllerGoogleMap = mapController;
     googleMapCompleterController.complete(controllerGoogleMap);
     updateMapTheme(controllerGoogleMap!);
+    storeCurrentLocationOfUser();
     // getCurrentLiveLocationOfUser();
   }
 
@@ -153,38 +333,9 @@ Future<void> storeCurrentLocationOfUser() async {
     );
   }
 
-  Future<void> helpPressed() async {
-    if (btnFireSelected == false &&
-        btnMedSelected == false &&
-        btnPoliceSelected == false) {
-      _snackbarService.showSnackbar(
-          message: "Select Emergency Concern!",
-          duration: const Duration(seconds: 1));
-      return;
-    }
+ 
 
-    _snackbarService.showSnackbar(
-        message: "Rescue Coming!!", duration: const Duration(seconds: 2));
-    btnMedSelected = false;
-    btnFireSelected = false;
-    btnPoliceSelected = false;
-    rebuildUi();
-  }
-
-  void medPressed() {
-    btnMedSelected = !btnMedSelected;
-    rebuildUi();
-  }
-
-  void firePressed() {
-    btnFireSelected = !btnFireSelected;
-    rebuildUi();
-  }
-
-  void policePressed() {
-    btnPoliceSelected = !btnPoliceSelected;
-    rebuildUi();
-  }
+ 
 
   void incrementCounter() {}
 

@@ -53,7 +53,7 @@ class UserSignUpViewModel extends BaseViewModel {
         _snackBarService.showSnackbar(message: l.message);
       }, (r) {
         _snackBarService.showSnackbar(
-            message: AppConstants.choosePaymentMethodText,
+            message: AppConstants.accountCreatedText,
             duration: const Duration(seconds: 2));
         _navigatorService.replaceWithLoginView();
       });

@@ -23,7 +23,7 @@ class HomeView extends StackedView<HomeViewModel> {
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: Colors.white,
@@ -43,19 +43,20 @@ class HomeView extends StackedView<HomeViewModel> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 16,
           ),
           Expanded(
             child: PageView(
               controller: viewModel.pageController,
               onPageChanged: viewModel.onPageChanged,
+              physics: const NeverScrollableScrollPhysics(), 
               children: [
                 SingleChildScrollView(
                   child: Column(
                     children: [
                       Container(
-                        margin: EdgeInsets.symmetric(vertical: 30),
+                        margin: const EdgeInsets.symmetric(vertical: 30),
                         width: 300,
                         height: 600,
                         child: Column(
@@ -152,30 +153,30 @@ class HomeView extends StackedView<HomeViewModel> {
             child: NavigationBar(
               backgroundColor: Colors.white,
               height: 70,
-              shadowColor: Color(0xFF948D8D),
+              shadowColor: const Color(0xFF948D8D),
               selectedIndex: viewModel.currentPageIndex,
               onDestinationSelected: viewModel.onDestinationSelected,
               destinations: [
-                NavigationDestination(
+                const NavigationDestination(
                   icon: Icon(
                     Icons.home,
                     size: 30,
                   ),
                   selectedIcon: Icon(
                     Icons.home,
-                    color: const Color.fromARGB(255, 54, 244, 216),
+                    color: Color.fromARGB(255, 54, 244, 216),
                     size: 40,
                   ),
                   label: AppConstants.HomeText,
                 ),
-                NavigationDestination(
+                const NavigationDestination(
                   icon: Icon(
                     Icons.map,
                     size: 30,
                   ),
                   selectedIcon: Icon(
                     Icons.map,
-                    color: const Color.fromARGB(255, 54, 244, 216),
+                    color: Color.fromARGB(255, 54, 244, 216),
                     size: 40,
                   ),
                   label: AppConstants.mapsText,
@@ -197,5 +198,9 @@ class HomeView extends StackedView<HomeViewModel> {
   @override
   void onViewModelReady(HomeViewModel viewModel) {
     viewModel.init();
+  }
+  
+  void onViewModelReadyStatus(HomeViewModel viewModel) {
+    viewModel.initState();
   }
 }
