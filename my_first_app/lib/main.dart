@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_first_app/app/app.locator.dart';
 import 'package:my_first_app/app/app.router.dart';
@@ -14,11 +15,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Request location permission if not granted
-  final locationPermission = await Permission.locationWhenInUse.status;
-  if (locationPermission.isDenied) {
-    await Permission.locationWhenInUse.request();
+ LocationPermission permission;
+
+  permission = await Geolocator.checkPermission();
+
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
   }
 
+  if (permission == LocationPermission.deniedForever) {
+    print('Location permission is permanently denied, please enable it from the settings.');
+  }
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,

@@ -34,6 +34,7 @@ class HomeViewModel extends BaseViewModel {
   final _navigationService = locator<NavigationService>();
   int currentPageIndex = 0;
   final Map<MarkerId, Marker> _markers = {};
+  Map<MarkerId, Marker> get markers => _markers;
   final double _radius = 1000; // 1 kilometer
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -44,6 +45,7 @@ class HomeViewModel extends BaseViewModel {
   get counterLabel => null;
   late User user;
   late Connectivity _connectivity;
+  late Timer timer;
 
 
   init() async {
@@ -58,6 +60,78 @@ class HomeViewModel extends BaseViewModel {
     });
     setBusy(false);
   }
+
+
+Future<void> _getLocationDataAndMarkNearest() async {
+  setBusy(true);
+
+  // Get the user's current location
+  Position positionOfUser = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.bestForNavigation);
+
+  // Clear any existing markers on the map
+  _markers.clear();
+
+  // Fetch the location data from Firebase Firestore
+  QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+      .collection('responder')
+      .get();
+
+  if (querySnapshot.docs.isEmpty) {
+    print('No location data available');
+    return;
+  }
+
+  // Initialize the variable to store the nearest location
+  Map<String, dynamic>? nearestLocation;
+  double shortestDistance = _radius;
+
+  // Iterate through the location data points, calculating the distance between the user's current location and each location data point
+  for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs) {
+    double latitude = documentSnapshot.data()['latitude'];
+    double longitude = documentSnapshot.data()['longitude'];
+    double distance = Geolocator.distanceBetween(
+        positionOfUser.latitude,
+        positionOfUser.longitude,
+        latitude,
+        longitude);
+
+    // If the current location data point is closer to the user, replace the nearest location with the current location data point
+    if (distance < shortestDistance) {
+      shortestDistance = distance;
+      nearestLocation = documentSnapshot.data();
+    }
+  }
+
+  // If a nearest location is found, add a marker on the map
+  if (nearestLocation != null) {
+    MarkerId markerId = MarkerId(nearestLocation.toString());
+    Marker marker = Marker(
+      markerId: markerId,
+      position: LatLng(nearestLocation['latitude'], nearestLocation['longitude']),
+      infoWindow: InfoWindow(
+        title: 'Nearest Responder',
+      ),
+    );
+    _markers[markerId] = marker;
+  }
+
+  setBusy(false);
+
+  // If the location data processing is unsuccessful, print an error message
+  if (nearestLocation == null) {
+    print('Error processing location data');
+  }
+
+  // Print statement to indicate that the process is complete
+  print('Location data processing is complete');
+
+  // Print the location data retrieved
+  if (nearestLocation != null) {
+    print('Nearest location data: $nearestLocation');
+  }
+}
+
 
 UserStatusProvider() {
     user = FirebaseAuth.instance.currentUser! as User;
@@ -151,13 +225,11 @@ Future<void> helpPressed() async {
   btnFireSelected = false;
   btnPoliceSelected = false;
   rebuildUi();
-  fetchUserLocations();
-
   // Call the sendFcmNotification function with user token and message
   // Assuming you have the user token and the message you want to send
   // Replace 'userToken' and 'message' with appropriate values
   try {
-    String token = 'cX1BeYfbTZ-j7369wuFmDE:APA91bHqQDXkhCelYcuqLNsdKJNGhgZJssRJUPfj8q_hQqUW0wvPgV0cVjBlp1mxlPKbSQASOyUF8EUe878CcTC62G2V3kQjV4lhPj8aLcZFnDsAklgIRMf-XobtZ_zD3fJzRtDNiggU'; // Replace with user token
+    String token = 'e8Gr92ZHQI2Dd0wX5Ik-3F:APA91bFaXl0dE03Im32L-4NCdSqe0-CaWQM7X0u_mTYSug3F8_yrNDPAg9wLxYPXVNMIzSr5IrYe7-bfuh0P013hI19mRpuxiIRizks5ZjG8y1-uOqZzM27wEZPOszZ0ScZESQ_-qrc9'; // Replace with user token
     String message = 'Naay Nangayo ug Tabang!!!'; // Replace with your message
     await sendFcmNotification(token, message);
     print('FCM notification sent successfully!');
@@ -201,36 +273,6 @@ Future<void> saveConcernsToFirestore(List<String> concerns) async {
 
 
 
- Future<void> fetchUserLocations() async {
-    final QuerySnapshot<Map<String, dynamic>> usersSnapshot =
-        await _firestore.collection('users').get();
-
-    for (var doc in usersSnapshot.docs) {
-      final double latitude = doc.data()['latitude'];
-      final double longitude = doc.data()['longitude'];
-      final String userId = doc.id;
-
-      final LatLng userLocation = LatLng(latitude, longitude);
-      addMarker(userId, userLocation);
-        }
-
-    notifyListeners();
-  }
-
- void addMarker(String userId, LatLng userLocation) {
-    final MarkerId markerId = MarkerId(userId);
-    final Marker marker = Marker(
-      markerId: markerId,
-      position: userLocation,
-      infoWindow: InfoWindow(
-        title: 'User ID: $userId',
-        snippet: 'Location: ${userLocation.latitude}, ${userLocation.longitude}',
-      ),
-    );
-
-    _markers[markerId] = marker;
-  }
-
 
 Future<void> storeCurrentLocationOfUser() async {
   setBusy(true);
@@ -240,20 +282,19 @@ Future<void> storeCurrentLocationOfUser() async {
       desiredAccuracy: LocationAccuracy.bestForNavigation);
   currentPositionOfUser = positionOfUser;
 
-  // Convert current position to LatLng
-  LatLng positionOfUserInLatLang = LatLng(
-      currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
-
   // Get current date and time
   DateTime currentDateTime = DateTime.now();
 
   // Store the location data in Firestore along with date and time
   await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-    'location': GeoPoint(positionOfUser.latitude, positionOfUser.longitude),
+    'latitude': positionOfUser.latitude,
+    'longitude': positionOfUser.longitude,
     'timestamp': Timestamp.fromDate(currentDateTime),
   });
 
   // Animate camera to user's current position
+  LatLng positionOfUserInLatLang = LatLng(
+      currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
   CameraPosition cameraPosition =
       CameraPosition(target: positionOfUserInLatLang, zoom: 15);
   controllerGoogleMap!
@@ -297,13 +338,14 @@ Future<void> storeCurrentLocationOfUser() async {
     return utf8.decode(list);
   }
 
-  void mapCreated(GoogleMapController mapController) {
-    controllerGoogleMap = mapController;
-    googleMapCompleterController.complete(controllerGoogleMap);
-    updateMapTheme(controllerGoogleMap!);
-    storeCurrentLocationOfUser();
-    // getCurrentLiveLocationOfUser();
-  }
+ void mapCreated(GoogleMapController mapController) {
+  controllerGoogleMap = mapController;
+  googleMapCompleterController.complete(controllerGoogleMap);
+  updateMapTheme(controllerGoogleMap!);
+  storeCurrentLocationOfUser();
+  timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => storeCurrentLocationOfUser());
+  _getLocationDataAndMarkNearest();
+}
 
   void goToProfileView() {
     _navigationService.navigateToProfileViewView();
@@ -313,6 +355,7 @@ Future<void> storeCurrentLocationOfUser() async {
     currentPageIndex = index;
     rebuildUi();
     if (index == 1) {
+      _getLocationDataAndMarkNearest();
       storeCurrentLocationOfUser();
       if (controllerGoogleMap != null) {
         updateMapTheme(controllerGoogleMap!);
@@ -333,7 +376,12 @@ Future<void> storeCurrentLocationOfUser() async {
     );
   }
 
- 
+ @override
+void dispose() {
+  timer.cancel();
+  streamSubscription?.cancel();
+  super.dispose();
+}
 
  
 

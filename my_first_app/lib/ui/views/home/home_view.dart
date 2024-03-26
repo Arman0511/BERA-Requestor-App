@@ -117,6 +117,7 @@ class HomeView extends StackedView<HomeViewModel> {
                       Container(
                         height: 400, // Set a specific height for the GoogleMap
                         child: GoogleMap(
+                        markers: viewModel.markers.values.toSet(),
                           mapType: MapType.normal,
                           myLocationEnabled: true,
                           initialCameraPosition: googlePlexInitialPosition,
