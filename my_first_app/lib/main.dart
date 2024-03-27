@@ -1,3 +1,4 @@
+import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'firebase_options.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
   // Request location permission if not granted
@@ -31,6 +33,11 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
+    
+// Print the Firebase installation ID
+    String? installationId = await FirebaseInstallations.instance.getId();
+    print('Firebase Installation ID: $installationId');
+    
     print('Error initializing Firebase: $e');
   }
 

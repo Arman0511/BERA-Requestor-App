@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -46,6 +47,36 @@ class HomeViewModel extends BaseViewModel {
   late User user;
   late Connectivity _connectivity;
   late Timer timer;
+
+
+
+
+void sendNotification() async {
+  final uri = Uri.parse('https://fcm.googleapis.com/fcm/send');
+  await http.post(
+    uri,
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+      'Authorization': 'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I', // Your FCM server key
+    },
+    body: jsonEncode(
+      <String, dynamic>{
+        'notification': <String, dynamic>{
+          'body': 'Your message here',
+          'title': 'Notification Title'
+        },
+        'priority': 'high',
+        'data': <String, dynamic>{
+          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+          'screen': 'homepage', // Screen to open in receiver app
+        },
+        'to': 'eDU_uALBTqWOBdVCZp8sYR:APA91bGQw570nS_ORwMLwuhUgxuaelszOVEZ4Azv6WiGZvMovztCqP-m_jeQu0Qrt-TVWBl6ZtC6zA4SZNDcL_IyMui8nai_UvY6KWvyESfyw_KKD1t3Zr-cnllTMMOSZSu6vnDTXV4U', // Receiver's FCM token
+      },
+    ),
+  );
+}
+
+
 
 
   init() async {
@@ -151,49 +182,82 @@ UserStatusProvider() {
       });
     }
     }
-  
- Future<void> sendFcmNotification(String token, String message) async {
-  // Create a HTTP client
-  final http.Client httpClient = http.Client();
 
-  // Define the URL of the FCM API endpoint
-  const String url = 'https://fcm.googleapis.com/fcm/send';
+    Future<void> printInstallationId() async {
+  FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
 
-  // Define the headers of the request
-  final Map<String, String> headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I',
-  };
+  // Request permission for receiving notifications (optional)
+  await firebaseMessaging.requestPermission();
 
-  // Define the body of the request
-  final Map<String, dynamic> body = {
-    'to': token,
-    'notification': {
-      'body': message,
-      'title': 'New Notification',
-      'android': {
-        'notification': {
-          'priority': 'high',
-        },
-      },
-    },
-  };
+  // Get the installation ID
+  String? installationId = await firebaseMessaging.getToken();
 
-  // Send the request
-  final http.Response response = await httpClient.post(
-    Uri.parse(url),
-    headers: headers,
-    body: json.encode(body),
-  );
-
-  // Check the status code of the response
-  if (response.statusCode != 200) {
-    throw Exception('Failed to send FCM notification: ${response.statusCode}');
-  }
-
-  // Close the HTTP client
-  httpClient.close();
+  // Print the installation ID
+  print('Installation ID: $installationId');
 }
+  
+// Future<void> sendNotificationToResponder(String title, String message,
+//     String fcmToken, String installationId) async {
+//   // Define the URL within the function
+//   String url = 'https://fcm.googleapis.com/fcm/send';
+
+//   // Add the `fcmToken` parameter to the function signature
+//   // Replace the `Authorization` header with your own FCM server key
+//   final Map<String, String> headers = {
+//     'Content-Type': 'application/json',
+//     'Authorization':
+//         'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I',
+//   };
+
+//   // Add the `to` field to the body of the request
+//   // Replace the `title` and `body` fields with your own values
+//   final Map<String, dynamic> requestBody = {
+//     'to': fcmToken,
+//     'notification': {
+//       'title': title,
+//       'body': message,
+//       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+//       'icon': 'fcm_push_icon',
+//     },
+//     'data': {
+//       'location': 'Sendeu',
+//       'description': 'Helping hand needed!',
+//       'installation_id': installationId, // Adding installation ID to data payload
+//     },
+//     'apns': {
+//       'payload': {
+//         'aps': {
+//           'content-available': '1',
+//         },
+//       },
+//     },
+//     'android': {
+//       'notification': {
+//         'priority': 'high',
+//       },
+//       'data': {
+//         'location': 'Sendeu',
+//         'description': 'Helping hand needed!',
+//         'installation_id': installationId, // Adding installation ID to data payload
+//       },
+//     },
+//   };
+
+//   // Send the request using the `sendFcmNotification()` function
+//   // Replace the `token` parameter with the `fcmToken` parameter
+//   final http.Client httpClient = http.Client();
+//   final http.Response response = await httpClient.post(
+//     Uri.parse(url),
+//     headers: headers,
+//     body: json.encode(requestBody),
+//   );
+
+//   if (response.statusCode != 200) {
+//     throw Exception('Failed to send FCM notification: ${response.statusCode}');
+//   }
+
+//   httpClient.close();
+// }
 
 Future<void> helpPressed() async {
   List<String> selectedConcerns = [];
@@ -225,20 +289,26 @@ Future<void> helpPressed() async {
   btnFireSelected = false;
   btnPoliceSelected = false;
   rebuildUi();
-  // Call the sendFcmNotification function with user token and message
-  // Assuming you have the user token and the message you want to send
-  // Replace 'userToken' and 'message' with appropriate values
-  try {
-    String token = 'e8Gr92ZHQI2Dd0wX5Ik-3F:APA91bFaXl0dE03Im32L-4NCdSqe0-CaWQM7X0u_mTYSug3F8_yrNDPAg9wLxYPXVNMIzSr5IrYe7-bfuh0P013hI19mRpuxiIRizks5ZjG8y1-uOqZzM27wEZPOszZ0ScZESQ_-qrc9'; // Replace with user token
-    String message = 'Naay Nangayo ug Tabang!!!'; // Replace with your message
-    await sendFcmNotification(token, message);
-    print('FCM notification sent successfully!');
+  sendNotification();
+  printInstallationId();
+  
+
+
+
+ try {
+    // String userToken = 'e8Gr92ZHQI2Dd0wX5Ik-3F:APA91bFaXl0dE03Im32L-4NCdSqe0-CaWQM7X0u_mTYSug3F8_yrNDPAg9wLxYPXVNMIzSr5IrYe7-bfuh0P013hI19mRpuxiIRizks5ZjG8y1-uOqZzM27wEZPOszZ0ScZESQ_-qrc9';
+    // String message = 'Naay Nangayo ug Tabang!!!';
+    // String installationId = 'e8Gr92ZHQI2Dd0wX5Ik-3F'; // Replace with actual installation ID
+
+    // await sendNotificationToResponder(message, message, userToken, installationId);
+
+    // print('FCM notification sent successfully!');
+
   } catch (error) {
-    print('Error sending FCM notification: $error');
+    // print('Error sending FCM notification: $error');
     // Handle error accordingly
   }
 }
-
 
 void medPressed() {
   btnMedSelected = !btnMedSelected;
