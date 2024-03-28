@@ -47,34 +47,45 @@ class HomeViewModel extends BaseViewModel {
   late User user;
   late Connectivity _connectivity;
   late Timer timer;
-
-
+  Map<String, dynamic>? nearestLocation;
+  // Declare a class-level variable to store the FCM token
+  String? nearestFCMToken;
 
 
 void sendNotification() async {
-  final uri = Uri.parse('https://fcm.googleapis.com/fcm/send');
-  await http.post(
-    uri,
-    headers: <String, String>{
-      'Content-Type': 'application/json',
-      'Authorization': 'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I', // Your FCM server key
-    },
-    body: jsonEncode(
-      <String, dynamic>{
-        'notification': <String, dynamic>{
-          'body': 'Your message here',
-          'title': 'Notification Title'
-        },
-        'priority': 'high',
-        'data': <String, dynamic>{
-          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          'screen': 'homepage', // Screen to open in receiver app
-        },
-        'to': 'eDU_uALBTqWOBdVCZp8sYR:APA91bGQw570nS_ORwMLwuhUgxuaelszOVEZ4Azv6WiGZvMovztCqP-m_jeQu0Qrt-TVWBl6ZtC6zA4SZNDcL_IyMui8nai_UvY6KWvyESfyw_KKD1t3Zr-cnllTMMOSZSu6vnDTXV4U', // Receiver's FCM token
+  // Check if nearestFCMToken is not null before sending the notification
+  if (nearestFCMToken != null) {
+    final uri = Uri.parse('https://fcm.googleapis.com/fcm/send');
+    await http.post(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I', // Your FCM server key
       },
-    ),
-  );
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'body': nearestLocation,
+            'title': 'Someone is in distress',
+            'android_channel_id': 'your_channel_id', // Required for Android 8.0 and above
+            'alert': 'standard', // Set to 'standard' to show a dialog box
+          },
+          'priority': 'high',
+          'data': <String, dynamic>{
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'screen': 'dialog_box', // Screen to open in receiver app
+          },
+          'to': nearestFCMToken, // Receiver's FCM token
+        },
+      ),
+    );
+  } else {
+    print('Nearest responder FCM token is null. Cannot send notification.');
+  }
 }
+
+
+
 
 
 
@@ -91,6 +102,7 @@ void sendNotification() async {
     });
     setBusy(false);
   }
+
 
 
 Future<void> _getLocationDataAndMarkNearest() async {
@@ -113,7 +125,7 @@ Future<void> _getLocationDataAndMarkNearest() async {
     return;
   }
 
-  // Initialize the variable to store the nearest location
+  // Initialize variables to store the nearest location and its FCM token
   Map<String, dynamic>? nearestLocation;
   double shortestDistance = _radius;
 
@@ -131,6 +143,7 @@ Future<void> _getLocationDataAndMarkNearest() async {
     if (distance < shortestDistance) {
       shortestDistance = distance;
       nearestLocation = documentSnapshot.data();
+      nearestFCMToken = documentSnapshot.data()['fcmToken']; // Fetching FCM token
     }
   }
 
@@ -140,11 +153,15 @@ Future<void> _getLocationDataAndMarkNearest() async {
     Marker marker = Marker(
       markerId: markerId,
       position: LatLng(nearestLocation['latitude'], nearestLocation['longitude']),
-      infoWindow: InfoWindow(
+      infoWindow: const InfoWindow(
         title: 'Nearest Responder',
       ),
     );
     _markers[markerId] = marker;
+
+    // Print the FCM token of the nearest responder
+    print('FCM token of nearest responder: $nearestFCMToken');
+    sendNotification();
   }
 
   setBusy(false);
@@ -152,6 +169,8 @@ Future<void> _getLocationDataAndMarkNearest() async {
   // If the location data processing is unsuccessful, print an error message
   if (nearestLocation == null) {
     print('Error processing location data');
+  } else {
+    print('Successfully implemented _getLocationDataAndMarkNearest()');
   }
 
   // Print statement to indicate that the process is complete
@@ -162,6 +181,82 @@ Future<void> _getLocationDataAndMarkNearest() async {
     print('Nearest location data: $nearestLocation');
   }
 }
+
+
+
+
+
+
+
+// Future<void> _getLocationDataAndMarkNearest() async {
+//   setBusy(true);
+
+//   // Get the user's current location
+//   Position positionOfUser = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.bestForNavigation);
+
+//   // Clear any existing markers on the map
+//   _markers.clear();
+
+//   // Fetch the location data from Firebase Firestore
+//   QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+//       .collection('responder')
+//       .get();
+
+//   if (querySnapshot.docs.isEmpty) {
+//     print('No location data available');
+//     return;
+//   }
+
+//   // Initialize the variable to store the nearest location
+ 
+//   double shortestDistance = _radius;
+
+//   // Iterate through the location data points, calculating the distance between the user's current location and each location data point
+//   for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs) {
+//     double latitude = documentSnapshot.data()['latitude'];
+//     double longitude = documentSnapshot.data()['longitude'];
+//     double distance = Geolocator.distanceBetween(
+//         positionOfUser.latitude,
+//         positionOfUser.longitude,
+//         latitude,
+//         longitude);
+
+//     // If the current location data point is closer to the user, replace the nearest location with the current location data point
+//     if (distance < shortestDistance) {
+//       shortestDistance = distance;
+//       nearestLocation = documentSnapshot.data();
+//     }
+//   }
+
+//   // If a nearest location is found, add a marker on the map
+//   if (nearestLocation != null) {
+//     MarkerId markerId = MarkerId(nearestLocation.toString());
+//     Marker marker = Marker(
+//       markerId: markerId,
+//       position: LatLng(nearestLocation?['latitude'], nearestLocation?['longitude']),
+//       infoWindow: InfoWindow(
+//         title: 'Nearest Responder',
+//       ),
+//     );
+//     _markers[markerId] = marker;
+//   }
+
+//   setBusy(false);
+
+//   // If the location data processing is unsuccessful, print an error message
+//   if (nearestLocation == null) {
+//     print('Error processing location data');
+//   }
+
+//   // Print statement to indicate that the process is complete
+//   print('Location data processing is complete');
+
+//   // Print the location data retrieved
+//   if (nearestLocation != null) {
+//     print('Nearest location data: $nearestLocation');
+//   }
+// }
 
 
 UserStatusProvider() {
@@ -195,6 +290,12 @@ UserStatusProvider() {
   // Print the installation ID
   print('Installation ID: $installationId');
 }
+
+
+
+
+
+
   
 // Future<void> sendNotificationToResponder(String title, String message,
 //     String fcmToken, String installationId) async {
@@ -289,9 +390,7 @@ Future<void> helpPressed() async {
   btnFireSelected = false;
   btnPoliceSelected = false;
   rebuildUi();
-  sendNotification();
-  printInstallationId();
-  
+_getLocationDataAndMarkNearest();  
 
 
 
