@@ -9,6 +9,7 @@ class User with _$User {
     required String name,
     required String email,
     required String uid,
+    required String phonenumber,
     String? image,
   }) = _User;
 

@@ -41,6 +41,7 @@ Future<void> logIn() async {
     });
   }
 }
+
   bool validateInput() {
     String? emailValidation = isValidEmail(emailController.text);
     String? passwordValidation = isValidPassword(passwordController.text);

@@ -50,6 +50,7 @@ class HomeViewModel extends BaseViewModel {
   Map<String, dynamic>? nearestLocation;
   // Declare a class-level variable to store the FCM token
   String? nearestFCMToken;
+  String? nearestUID;
 
 
 void sendNotification() async {
@@ -98,10 +99,29 @@ void sendNotification() async {
       if (userData != null) {
         user = userData;
         rebuildUi();
+        storeCurrentLocationOfUser();
       }
     });
     setBusy(false);
   }
+
+
+Future<void> saveUidToResponder() async {
+  try {
+    await init(); // Ensure user is initialized
+
+    final userSubUidRef = FirebaseFirestore.instance.collection('responder').doc(nearestUID).collection('userNeededHelp').doc(user.uid);
+
+    await userSubUidRef.set({
+      'userId': user.uid,
+      'timestamp': Timestamp.fromDate(DateTime.now()),
+    });
+    print('UID saved to Firestore successfully!');
+  } catch (error) {
+    print('Error saving UID to Firestore: $error');
+    // Handle error accordingly
+  }
+}
 
 
 
@@ -144,6 +164,7 @@ Future<void> _getLocationDataAndMarkNearest() async {
       shortestDistance = distance;
       nearestLocation = documentSnapshot.data();
       nearestFCMToken = documentSnapshot.data()['fcmToken']; // Fetching FCM token
+      nearestUID = documentSnapshot.data()['uid'];
     }
   }
 
@@ -161,7 +182,9 @@ Future<void> _getLocationDataAndMarkNearest() async {
 
     // Print the FCM token of the nearest responder
     print('FCM token of nearest responder: $nearestFCMToken');
-    sendNotification();
+    print('uid of the nearest responder:$nearestUID');
+
+   
   }
 
   setBusy(false);
@@ -182,81 +205,69 @@ Future<void> _getLocationDataAndMarkNearest() async {
   }
 }
 
+Future<void> _getFcmAndUidOfNearest() async {
+  setBusy(true);
 
+  // Get the user's current location
+  Position positionOfUser = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.bestForNavigation);
 
+  // Fetch the location data from Firebase Firestore
+  QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+      .collection('responder')
+      .get();
 
+  if (querySnapshot.docs.isEmpty) {
+    print('No location data available');
+    return;
+  }
 
+  // Initialize variables to store the nearest location and its FCM token
+  Map<String, dynamic>? nearestLocation;
+  double shortestDistance = _radius;
 
+  // Iterate through the location data points, calculating the distance between the user's current location and each location data point
+  for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs) {
+    double latitude = documentSnapshot.data()['latitude'];
+    double longitude = documentSnapshot.data()['longitude'];
+    double distance = Geolocator.distanceBetween(
+        positionOfUser.latitude,
+        positionOfUser.longitude,
+        latitude,
+        longitude);
 
-// Future<void> _getLocationDataAndMarkNearest() async {
-//   setBusy(true);
+    // If the current location data point is closer to the user, replace the nearest location with the current location data point
+    if (distance < shortestDistance) {
+      shortestDistance = distance;
+      nearestLocation = documentSnapshot.data();
+      nearestFCMToken = documentSnapshot.data()['fcmToken']; // Fetching FCM token
+      nearestUID = documentSnapshot.data()['uid'];
+    }
+     // Print the FCM token of the nearest responder
+    print('FCM token of nearest responder: $nearestFCMToken');
+    print('uid of the nearest responder:$nearestUID');
+    sendNotification();
+    saveUidToResponder();
+  }
 
-//   // Get the user's current location
-//   Position positionOfUser = await Geolocator.getCurrentPosition(
-//       desiredAccuracy: LocationAccuracy.bestForNavigation);
+  setBusy(false);
 
-//   // Clear any existing markers on the map
-//   _markers.clear();
+  // If the location data processing is unsuccessful, print an error message
+  if (nearestLocation == null) {
+    print('Error processing location data');
+  } else {
+    print('Successfully implemented _getLocationDataAndMarkNearest()');
+  }
 
-//   // Fetch the location data from Firebase Firestore
-//   QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-//       .collection('responder')
-//       .get();
+  // Print statement to indicate that the process is complete
+  print('Location data processing is complete');
 
-//   if (querySnapshot.docs.isEmpty) {
-//     print('No location data available');
-//     return;
-//   }
+  // Print the location data retrieved
+  if (nearestLocation != null) {
+    print('Nearest location data: $nearestLocation');
+  }
+}
 
-//   // Initialize the variable to store the nearest location
- 
-//   double shortestDistance = _radius;
-
-//   // Iterate through the location data points, calculating the distance between the user's current location and each location data point
-//   for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs) {
-//     double latitude = documentSnapshot.data()['latitude'];
-//     double longitude = documentSnapshot.data()['longitude'];
-//     double distance = Geolocator.distanceBetween(
-//         positionOfUser.latitude,
-//         positionOfUser.longitude,
-//         latitude,
-//         longitude);
-
-//     // If the current location data point is closer to the user, replace the nearest location with the current location data point
-//     if (distance < shortestDistance) {
-//       shortestDistance = distance;
-//       nearestLocation = documentSnapshot.data();
-//     }
-//   }
-
-//   // If a nearest location is found, add a marker on the map
-//   if (nearestLocation != null) {
-//     MarkerId markerId = MarkerId(nearestLocation.toString());
-//     Marker marker = Marker(
-//       markerId: markerId,
-//       position: LatLng(nearestLocation?['latitude'], nearestLocation?['longitude']),
-//       infoWindow: InfoWindow(
-//         title: 'Nearest Responder',
-//       ),
-//     );
-//     _markers[markerId] = marker;
-//   }
-
-//   setBusy(false);
-
-//   // If the location data processing is unsuccessful, print an error message
-//   if (nearestLocation == null) {
-//     print('Error processing location data');
-//   }
-
-//   // Print statement to indicate that the process is complete
-//   print('Location data processing is complete');
-
-//   // Print the location data retrieved
-//   if (nearestLocation != null) {
-//     print('Nearest location data: $nearestLocation');
-//   }
-// }
 
 
 UserStatusProvider() {
@@ -297,68 +308,6 @@ UserStatusProvider() {
 
 
   
-// Future<void> sendNotificationToResponder(String title, String message,
-//     String fcmToken, String installationId) async {
-//   // Define the URL within the function
-//   String url = 'https://fcm.googleapis.com/fcm/send';
-
-//   // Add the `fcmToken` parameter to the function signature
-//   // Replace the `Authorization` header with your own FCM server key
-//   final Map<String, String> headers = {
-//     'Content-Type': 'application/json',
-//     'Authorization':
-//         'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I',
-//   };
-
-//   // Add the `to` field to the body of the request
-//   // Replace the `title` and `body` fields with your own values
-//   final Map<String, dynamic> requestBody = {
-//     'to': fcmToken,
-//     'notification': {
-//       'title': title,
-//       'body': message,
-//       'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-//       'icon': 'fcm_push_icon',
-//     },
-//     'data': {
-//       'location': 'Sendeu',
-//       'description': 'Helping hand needed!',
-//       'installation_id': installationId, // Adding installation ID to data payload
-//     },
-//     'apns': {
-//       'payload': {
-//         'aps': {
-//           'content-available': '1',
-//         },
-//       },
-//     },
-//     'android': {
-//       'notification': {
-//         'priority': 'high',
-//       },
-//       'data': {
-//         'location': 'Sendeu',
-//         'description': 'Helping hand needed!',
-//         'installation_id': installationId, // Adding installation ID to data payload
-//       },
-//     },
-//   };
-
-//   // Send the request using the `sendFcmNotification()` function
-//   // Replace the `token` parameter with the `fcmToken` parameter
-//   final http.Client httpClient = http.Client();
-//   final http.Response response = await httpClient.post(
-//     Uri.parse(url),
-//     headers: headers,
-//     body: json.encode(requestBody),
-//   );
-
-//   if (response.statusCode != 200) {
-//     throw Exception('Failed to send FCM notification: ${response.statusCode}');
-//   }
-
-//   httpClient.close();
-// }
 
 Future<void> helpPressed() async {
   List<String> selectedConcerns = [];
@@ -390,23 +339,7 @@ Future<void> helpPressed() async {
   btnFireSelected = false;
   btnPoliceSelected = false;
   rebuildUi();
-_getLocationDataAndMarkNearest();  
-
-
-
- try {
-    // String userToken = 'e8Gr92ZHQI2Dd0wX5Ik-3F:APA91bFaXl0dE03Im32L-4NCdSqe0-CaWQM7X0u_mTYSug3F8_yrNDPAg9wLxYPXVNMIzSr5IrYe7-bfuh0P013hI19mRpuxiIRizks5ZjG8y1-uOqZzM27wEZPOszZ0ScZESQ_-qrc9';
-    // String message = 'Naay Nangayo ug Tabang!!!';
-    // String installationId = 'e8Gr92ZHQI2Dd0wX5Ik-3F'; // Replace with actual installation ID
-
-    // await sendNotificationToResponder(message, message, userToken, installationId);
-
-    // print('FCM notification sent successfully!');
-
-  } catch (error) {
-    // print('Error sending FCM notification: $error');
-    // Handle error accordingly
-  }
+_getFcmAndUidOfNearest();
 }
 
 void medPressed() {
@@ -471,20 +404,6 @@ Future<void> storeCurrentLocationOfUser() async {
 
   setBusy(false);
 }
-  // getCurrentLiveLocationOfUser() async {
-  //   Position positionOfUser = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.bestForNavigation);
-  //   currentPositionOfUser = positionOfUser;
-
-  //   LatLng positionOfUserInLatLang = LatLng(
-  //       currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
-  //   CameraPosition cameraPosition =
-  //       CameraPosition(target: positionOfUserInLatLang, zoom: 15);
-  //   controllerGoogleMap!
-  //       .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-  //   rebuildUi();
-  //   print("Created Map");
-  // }
 
   void initState() {
     notificationService.requestNotificationPermission();
@@ -511,7 +430,6 @@ Future<void> storeCurrentLocationOfUser() async {
   controllerGoogleMap = mapController;
   googleMapCompleterController.complete(controllerGoogleMap);
   updateMapTheme(controllerGoogleMap!);
-  storeCurrentLocationOfUser();
   timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => storeCurrentLocationOfUser());
   _getLocationDataAndMarkNearest();
 }

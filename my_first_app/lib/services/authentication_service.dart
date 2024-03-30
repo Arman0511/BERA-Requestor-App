@@ -70,6 +70,7 @@ class AuthenticationService {
       User user = User(
         name: name,
         email: email,
+        phonenumber: phoneNum,
         uid: credential.user!.uid,
       );
 
