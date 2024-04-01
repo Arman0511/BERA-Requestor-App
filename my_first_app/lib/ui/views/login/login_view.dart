@@ -24,7 +24,7 @@ class LoginView extends StackedView<LoginViewModel> {
   ) {
     return AppBody(
       body: SingleChildScrollView(
-        child: Column(
+        child:viewModel.isBusy ? const Center(child: CircularProgressIndicator(),) : Column(
           children: [
             const AppTitleText(text: AppConstants.welcomeText),
             const SizedBox(

@@ -36,11 +36,13 @@ Future<void> logIn() async {
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'fcmToken': fcmToken,
         'status': 'online',
+        'timestamp': Timestamp.fromDate(currentDateTime),
       });
       _navigationService.replaceWithHomeView();
     });
   }
 }
+DateTime currentDateTime = DateTime.now();
 
   bool validateInput() {
     String? emailValidation = isValidEmail(emailController.text);

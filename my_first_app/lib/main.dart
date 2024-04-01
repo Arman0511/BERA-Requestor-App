@@ -1,12 +1,12 @@
-import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_first_app/app/app.dialogs.dart';
 import 'package:my_first_app/app/app.locator.dart';
 import 'package:my_first_app/app/app.router.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:relative_time/relative_time.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'firebase_options.dart';
@@ -17,7 +17,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Request location permission if not granted
- LocationPermission permission;
+  LocationPermission permission;
 
   permission = await Geolocator.checkPermission();
 
@@ -28,17 +28,18 @@ Future<void> main() async {
   if (permission == LocationPermission.deniedForever) {
     print('Location permission is permanently denied, please enable it from the settings.');
   }
+
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    
-// Print the Firebase installation ID
-    String? installationId = await FirebaseInstallations.instance.getId();
-    print('Firebase Installation ID: $installationId');
-    
     print('Error initializing Firebase: $e');
+  }
+
+  // Request notification permission for web
+  if (kIsWeb) {
+    await FirebaseMessaging.instance.requestPermission();
   }
 
   // Handle background notification taps
@@ -48,9 +49,13 @@ Future<void> main() async {
       navigatorKey.currentState!.pushNamed("/message", arguments: message);
     }
   });
+
   setupLocator();
+  setupDialogUi();
+
   runApp(const MainApp());
 }
+
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});

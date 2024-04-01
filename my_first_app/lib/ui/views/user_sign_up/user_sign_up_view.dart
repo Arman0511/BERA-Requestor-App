@@ -10,7 +10,6 @@ import 'package:my_first_app/ui/custom_widget/app_title_text.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../common/app_constants.dart';
-import '../../custom_widget/app_button.dart';
 import 'user_sign_up_viewmodel.dart';
 
 class UserSignUpView extends StackedView<UserSignUpViewModel> {
@@ -24,7 +23,7 @@ class UserSignUpView extends StackedView<UserSignUpViewModel> {
   ) {
     return AppBody(
         body: SingleChildScrollView(
-      child: Column(
+      child: viewModel.isBusy ? const Center(child: CircularProgressIndicator(),) :Column(
         children: [
           AppBar(),
           AppTitleText(text: AppConstants.createAccText),

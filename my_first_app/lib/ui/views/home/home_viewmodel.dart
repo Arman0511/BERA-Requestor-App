@@ -18,6 +18,7 @@ import 'package:my_first_app/services/shared_pref_service.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:vibration/vibration.dart';
 
 
 class HomeViewModel extends BaseViewModel {
@@ -47,10 +48,15 @@ class HomeViewModel extends BaseViewModel {
   late User user;
   late Connectivity _connectivity;
   late Timer timer;
-  Map<String, dynamic>? nearestLocation;
+
   // Declare a class-level variable to store the FCM token
   String? nearestFCMToken;
   String? nearestUID;
+
+  BuildContext? context;
+
+  HomeViewModel(this.context);
+
 
 
 void sendNotification() async {
@@ -66,7 +72,7 @@ void sendNotification() async {
       body: jsonEncode(
         <String, dynamic>{
           'notification': <String, dynamic>{
-            'body': nearestLocation,
+            'body': '',
             'title': 'Someone is in distress',
             'android_channel_id': 'your_channel_id', // Required for Android 8.0 and above
             'alert': 'standard', // Set to 'standard' to show a dialog box
@@ -86,9 +92,77 @@ void sendNotification() async {
 }
 
 
+// void showDialogBox(BuildContext context) {
+//   showDialog(
+//     context: context,
+//     barrierDismissible: false,
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: const Text("A Responder Has Received Your Notification"),
+//         content: const SingleChildScrollView( // Wrap content with SingleChildScrollView
+//           scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//             ],
+//           ),
+//         ),
+//         actions: <Widget>[
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+              
+//               ElevatedButton(
+//                 onPressed: () {
+      
+//                       },
+//                 child: const Text("Close"),
+//               ),
+              
+//             ],
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
+
+// void getLocationDataAndNotify() {
+//   _getLocationDataOf1kmRadius();
+//   bool shouldProceed = true;
+//   try {
+//     _getFcmAndUidOfNearest();
+//   } catch (e) {
+//     // Catch any exception that might occur during the execution of _getFcmAndUidOfNearest()
+//     // and set shouldProceed to false to prevent the notification from being displayed.
+//     shouldProceed = false;
+//     rethrow;
+//   }
+//   if (shouldProceed) {
+//     showDialogBox(context!);
+//   }
+// }
+
+// void onNotificationClicked(Map<String, dynamic> data, bool isInForeground) {
+//   // Handle notification click here
+//   Future.delayed(const Duration(seconds: 2), () {
+//     showDialogBox(context!);
+    
+//   });
+// }
 
 
-
+Future<void> vibrate() async {
+    // Check if the device supports vibration
+    bool? hasVibrator = await Vibration.hasVibrator();
+    if (hasVibrator != null && hasVibrator) {
+      // Vibrate for 500ms
+      Vibration.vibrate(duration: 1000);
+    } else {
+      // Device doesn't support vibration or it's null
+      print('Device does not support vibration');
+    }
+  }
 
 
   init() async {
@@ -102,7 +176,43 @@ void sendNotification() async {
         storeCurrentLocationOfUser();
       }
     });
+
     setBusy(false);
+
+//      FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
+
+//   // Set foreground notification presentation options
+//   FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+//     alert: true,
+//     badge: true,
+//     sound: true,
+//   );
+
+//   // Listen for incoming messages
+//   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+//     // Handle foreground messages
+//     if (message.notification != null) {
+//       // Handle notification payload when app is in the foreground
+//       onNotificationClicked(message.data, true);
+//       vibrate();
+//     }
+//   });
+
+//   // Listen for notification clicks when app is in the background
+//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+//     // Handle notification payload when app is in the background
+//     onNotificationClicked(message.data, true);
+//     vibrate();
+//   });
+// }
+
+
+// Future<void> _handleBackgroundMessage(RemoteMessage message) async {
+//   if (message.notification != null) {
+//     // Handle notification payload when app is completely closed
+//     onNotificationClicked(message.data, true);
+//     vibrate();
+//   }
   }
 
 
@@ -123,6 +233,84 @@ Future<void> saveUidToResponder() async {
   }
 }
 
+
+Future<void> _getLocationDataOf1kmRadius() async {
+  setBusy(true);
+
+  // Get the user's current location
+  Position positionOfUser = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.bestForNavigation);
+
+  // Clear any existing markers on the map
+  _markers.clear();
+
+  // Fetch the location data from Firebase Firestore
+  QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+      .collection('responder')
+      .get();
+
+  if (querySnapshot.docs.isEmpty) {
+    print('No location data available');
+    return;
+  }
+
+
+  double radiusInMeters = 1000; // 1km in meters
+
+  // Iterate through the location data points, calculating the distance between the user's current location and each location data point
+  for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs) {
+    double latitude = documentSnapshot.data()['latitude'];
+    double longitude = documentSnapshot.data()['longitude'];
+    double distance = Geolocator.distanceBetween(
+        positionOfUser.latitude,
+        positionOfUser.longitude,
+        latitude,
+        longitude);
+
+    // Check if the distance is within the radius (1km)
+    if (distance <= radiusInMeters) {
+      // Add the responder to the map if it's within the radius
+      MarkerId markerId = MarkerId(documentSnapshot.id);
+      Marker marker = Marker(
+        markerId: markerId,
+        position: LatLng(latitude, longitude),
+        infoWindow: const InfoWindow(
+          title: 'Responder',
+        ),
+      );
+      _markers[markerId] = marker;
+    }
+  }
+
+  // Print information of responders within 1km radius
+  print('Responders within 1km radius:');
+  for (QueryDocumentSnapshot<Map<String, dynamic>> documentSnapshot in querySnapshot.docs) {
+    double latitude = documentSnapshot.data()['latitude'];
+    double longitude = documentSnapshot.data()['longitude'];
+    String name = documentSnapshot.data()['name'];
+    double distance = Geolocator.distanceBetween(
+        positionOfUser.latitude,
+        positionOfUser.longitude,
+        latitude,
+        longitude);
+    if (distance <= radiusInMeters) {
+      nearestFCMToken = documentSnapshot.data()['fcmToken']; // Fetching FCM token
+      nearestUID = documentSnapshot.data()['uid'];
+      // print('Responder ID: ${documentSnapshot.id}');
+      // print('Latitude: $latitude');
+      // print('Longitude: $longitude');
+      print('Name: $name');
+      print('UID: $nearestUID');
+      print('FCMtoken: $nearestFCMToken');
+      // Print other information as needed
+    }
+  }
+
+  // Print statement to indicate that the process is complete
+  print('Location data processing is complete');
+
+  setBusy(false);
+}
 
 
 Future<void> _getLocationDataAndMarkNearest() async {
@@ -289,25 +477,6 @@ UserStatusProvider() {
     }
     }
 
-    Future<void> printInstallationId() async {
-  FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-
-  // Request permission for receiving notifications (optional)
-  await firebaseMessaging.requestPermission();
-
-  // Get the installation ID
-  String? installationId = await firebaseMessaging.getToken();
-
-  // Print the installation ID
-  print('Installation ID: $installationId');
-}
-
-
-
-
-
-
-  
 
 Future<void> helpPressed() async {
   List<String> selectedConcerns = [];
@@ -339,6 +508,7 @@ Future<void> helpPressed() async {
   btnFireSelected = false;
   btnPoliceSelected = false;
   rebuildUi();
+  // getLocationDataAndNotify();
 _getFcmAndUidOfNearest();
 }
 
@@ -357,21 +527,35 @@ void policePressed() {
   rebuildUi();
 }
 
-Future<void> saveConcernsToFirestore(List<String> concerns) async {
+Future<void> saveConcernsToFirestore(List<String> selectedConcerns) async {
   try {
     await init(); // Ensure user is initialized
 
     final userConcernRef =
         FirebaseFirestore.instance.collection('users').doc(user.uid);
 
-    // Update the 'concerns' field with the selected concerns without overwriting other fields
-    await userConcernRef.update({'concerns': FieldValue.arrayUnion(concerns)});
+    // Get the current document snapshot to preserve other fields
+    final snapshot = await userConcernRef.get();
+
+    // Get the current data to preserve other fields
+    Map<String, dynamic>? userData = snapshot.data();
+
+    // Update the 'concerns' field
+    userData?['concerns'] = selectedConcerns.isNotEmpty ? selectedConcerns : FieldValue.delete();
+
+    // Update the document with the modified data
+    await userConcernRef.set(userData!);
+
     print('Concerns saved to Firestore successfully!');
   } catch (error) {
     print('Error saving concerns to Firestore: $error');
     // Handle error accordingly
   }
 }
+
+
+
+
 
 
 
@@ -431,7 +615,7 @@ Future<void> storeCurrentLocationOfUser() async {
   googleMapCompleterController.complete(controllerGoogleMap);
   updateMapTheme(controllerGoogleMap!);
   timer = Timer.periodic(const Duration(seconds: 10), (Timer t) => storeCurrentLocationOfUser());
-  _getLocationDataAndMarkNearest();
+  _getLocationDataOf1kmRadius();
 }
 
   void goToProfileView() {
@@ -442,7 +626,7 @@ Future<void> storeCurrentLocationOfUser() async {
     currentPageIndex = index;
     rebuildUi();
     if (index == 1) {
-      _getLocationDataAndMarkNearest();
+      // _getLocationDataAndMarkNearest();
       storeCurrentLocationOfUser();
       if (controllerGoogleMap != null) {
         updateMapTheme(controllerGoogleMap!);

@@ -59,7 +59,7 @@ class HomeView extends StackedView<HomeViewModel> {
                         margin: const EdgeInsets.symmetric(vertical: 30),
                         width: 300,
                         height: 600,
-                        child: Column(
+                        child: viewModel.isBusy ? const Center(child: CircularProgressIndicator(),) :Column(
                           children: <Widget>[
                             Material(
                               shape: const CircleBorder(),
@@ -194,7 +194,7 @@ class HomeView extends StackedView<HomeViewModel> {
   HomeViewModel viewModelBuilder(
     BuildContext context,
   ) =>
-      HomeViewModel();
+      HomeViewModel(context);
 
   @override
   void onViewModelReady(HomeViewModel viewModel) {
