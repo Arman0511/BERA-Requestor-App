@@ -173,7 +173,7 @@ class ProfileViewView extends StackedView<ProfileViewViewModel> {
   ProfileViewViewModel viewModelBuilder(BuildContext context) =>
       ProfileViewViewModel();
 
-      @override
+  @override
   void onViewModelReady(ProfileViewViewModel viewModel) {
     viewModel.init();
   }

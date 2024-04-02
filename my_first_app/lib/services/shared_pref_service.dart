@@ -7,6 +7,8 @@ import '../model/user.dart';
 class SharedPreferenceService {
   late StreamController<User?> _userStreamController;
 
+  String userId = "";
+
   SharedPreferenceService() {
     _userStreamController = StreamController<User?>.broadcast();
   }
@@ -15,6 +17,17 @@ class SharedPreferenceService {
   Future<void> deleteCurrentUser() async {
     final sharedPref = await SharedPreferences.getInstance();
     sharedPref.remove("USER_KEY");
+  }
+
+  Future<void> setIsPreviousOnline(bool status) async {
+    final sharedPref = await SharedPreferences.getInstance();
+    await sharedPref.setBool("USER_STATUS", status);
+  }
+
+  Future<bool?> getIsPreviousOnline() async {
+    final sharedPref = await SharedPreferences.getInstance();
+    final status = sharedPref.getBool("USER_STATUS");
+    return status;
   }
 
   Future<String?> getUserId() async {
@@ -39,6 +52,7 @@ class SharedPreferenceService {
     }
     _userStreamController.add(user);
     final sharedPref = await SharedPreferences.getInstance();
+    userId = user.uid;
     await sharedPref.setString("USER_KEY", jsonEncode(user.toJson()));
   }
 

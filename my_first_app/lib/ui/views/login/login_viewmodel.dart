@@ -20,29 +20,33 @@ class LoginViewModel extends BaseViewModel with InputValidation {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-Future<void> logIn() async {
-  if (validateInput()) {
-    setBusy(true);
-    final response = await _authenticationService.login(
-        email: emailController.text, password: passwordController.text);
-    setBusy(false);
-    response.fold((l) {
-      showBottomSheet(l.message);
-    }, (user) async {
-      await _sharedPref.saveUser(user);
-      // Generate FCM token
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      // Update Firestore document with the FCM token and status
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-        'fcmToken': fcmToken,
-        'status': 'online',
-        'timestamp': Timestamp.fromDate(currentDateTime),
+  Future<void> logIn() async {
+    if (validateInput()) {
+      setBusy(true);
+      final response = await _authenticationService.login(
+          email: emailController.text, password: passwordController.text);
+      setBusy(false);
+      response.fold((l) {
+        showBottomSheet(l.message);
+      }, (user) async {
+        await _sharedPref.saveUser(user);
+        // Generate FCM token
+        final fcmToken = await FirebaseMessaging.instance.getToken();
+        // Update Firestore document with the FCM token and status
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({
+          'fcmToken': fcmToken,
+          'status': 'online',
+          'timestamp': Timestamp.fromDate(currentDateTime),
+        });
+        _navigationService.replaceWithHomeView();
       });
-      _navigationService.replaceWithHomeView();
-    });
+    }
   }
-}
-DateTime currentDateTime = DateTime.now();
+
+  DateTime currentDateTime = DateTime.now();
 
   bool validateInput() {
     String? emailValidation = isValidEmail(emailController.text);
@@ -60,6 +64,7 @@ DateTime currentDateTime = DateTime.now();
       return false;
     }
   }
+
   void showBottomSheet(String description) {
     _bottomSheetService.showCustomSheet(
       variant: BottomSheetType.inputValidation,
@@ -75,5 +80,4 @@ DateTime currentDateTime = DateTime.now();
   void goToForgotPassword() {
     _navigationService.navigateToForgotPasswordViewView();
   }
-  
 }

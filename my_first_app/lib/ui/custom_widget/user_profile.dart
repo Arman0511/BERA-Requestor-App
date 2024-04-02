@@ -8,7 +8,7 @@ class UserProfile extends StatelessWidget {
   final String name;
   final String? imagePath;
 
-ImageProvider getImage() {
+  ImageProvider getImage() {
     if (imagePath == null) return const AssetImage(AppPng.AppAvatarPath);
     return NetworkImage(imagePath!);
   }

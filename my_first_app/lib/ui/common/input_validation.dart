@@ -22,11 +22,9 @@ mixin InputValidation {
   String? isValidInput(String input, String inputType) {
     if (input == "") {
       return "Please input your ${inputType.toLowerCase()}";
-    }
-    else if(input.length > 20) {
+    } else if (input.length > 20) {
       return "Data must at least 20 characters";
-    }
-    else {
+    } else {
       return null;
     }
   }

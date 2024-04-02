@@ -24,45 +24,49 @@ class LoginView extends StackedView<LoginViewModel> {
   ) {
     return AppBody(
       body: SingleChildScrollView(
-        child:viewModel.isBusy ? const Center(child: CircularProgressIndicator(),) : Column(
-          children: [
-            const AppTitleText(text: AppConstants.welcomeText),
-            const SizedBox(
-              height: 10,
-            ),
-            const AppImage(path: AppPng.AppAuthLoginPath),
-            const SizedBox(
-              height: 25,
-            ),
-            AppTextField(
-              controller: viewModel.emailController,
-              label: AppConstants.emailText,
-            ),
-            AppPasswordTextField(
-              controller: viewModel.passwordController,
-              label: AppConstants.passwordText,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            AppButton(
-              text: AppConstants.loginText,
-              onClick: viewModel.logIn,
-              isSelected: false,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            AppTextButton(
-              title: AppConstants.createNewAccText,
-              onClick: viewModel.goToSignUp,
-            ),
-            AppTextButton(
-              title: AppConstants.forgotPassText,
-              onClick: viewModel.goToForgotPassword,
-            ),
-          ],
-        ),
+        child: viewModel.isBusy
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                children: [
+                  const AppTitleText(text: AppConstants.welcomeText),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const AppImage(path: AppPng.AppAuthLoginPath),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  AppTextField(
+                    controller: viewModel.emailController,
+                    label: AppConstants.emailText,
+                  ),
+                  AppPasswordTextField(
+                    controller: viewModel.passwordController,
+                    label: AppConstants.passwordText,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  AppButton(
+                    text: AppConstants.loginText,
+                    onClick: viewModel.logIn,
+                    isSelected: false,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  AppTextButton(
+                    title: AppConstants.createNewAccText,
+                    onClick: viewModel.goToSignUp,
+                  ),
+                  AppTextButton(
+                    title: AppConstants.forgotPassText,
+                    onClick: viewModel.goToForgotPassword,
+                  ),
+                ],
+              ),
       ),
     );
   }

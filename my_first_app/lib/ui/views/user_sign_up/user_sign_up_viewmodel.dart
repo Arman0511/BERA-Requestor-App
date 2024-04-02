@@ -28,54 +28,54 @@ class UserSignUpViewModel extends BaseViewModel {
   }
 
   Future<void> signupPressed() async {
-  // Retrieve the current BuildContext
-  BuildContext? context =
-      locator<NavigationService>().navigatorKey?.currentContext!;
+    // Retrieve the current BuildContext
+    BuildContext? context =
+        locator<NavigationService>().navigatorKey?.currentContext!;
 
-  // Check connectivity
-  await cmethods.checkConnectivity(context!);
+    // Check connectivity
+    await cmethods.checkConnectivity(context!);
 
-  final verifyForm = validateForm();
-  if (verifyForm != null) {
-    _snackBarService.showSnackbar(message: verifyForm);
-  } else {
-    try {
-      // Show loading indicator
-      setBusy(true);
+    final verifyForm = validateForm();
+    if (verifyForm != null) {
+      _snackBarService.showSnackbar(message: verifyForm);
+    } else {
+      try {
+        // Show loading indicator
+        setBusy(true);
 
-      final response = await _authenticationService.signup(
-        nameTextController.text,
-        emailTextController.text,
-        passwordTextController.text,
-        phoneNumTextController.text,
-      );
+        final response = await _authenticationService.signup(
+          nameTextController.text,
+          emailTextController.text,
+          passwordTextController.text,
+          phoneNumTextController.text,
+        );
 
-      // Hide loading indicator
-      setBusy(false);
+        // Hide loading indicator
+        setBusy(false);
 
-      response.fold(
-        (l) {
-          _snackBarService.showSnackbar(message: l.message);
-        },
-        (r) {
-          _snackBarService.showSnackbar(
-              message: AppConstants.accountCreatedText,
-              duration: const Duration(seconds: 2));
-          _navigatorService.replaceWithLoginView();
-        },
-      );
-    } catch (e) {
-      // Hide loading indicator in case of error
-      setBusy(false);
-      // Handle error, you might want to show an error message or log it
-      print("Error during signup: $e");
-      // Optionally show a snackbar or dialog to inform the user about the error
-      _snackBarService.showSnackbar(
-          message: "An error occurred during signup. Please try again later.");
+        response.fold(
+          (l) {
+            _snackBarService.showSnackbar(message: l.message);
+          },
+          (r) {
+            _snackBarService.showSnackbar(
+                message: AppConstants.accountCreatedText,
+                duration: const Duration(seconds: 2));
+            _navigatorService.replaceWithLoginView();
+          },
+        );
+      } catch (e) {
+        // Hide loading indicator in case of error
+        setBusy(false);
+        // Handle error, you might want to show an error message or log it
+        print("Error during signup: $e");
+        // Optionally show a snackbar or dialog to inform the user about the error
+        _snackBarService.showSnackbar(
+            message:
+                "An error occurred during signup. Please try again later.");
+      }
     }
   }
-}
-
 
   void goToLoginPage() {
     _navigatorService.replaceWithLoginView();

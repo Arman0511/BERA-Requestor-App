@@ -19,6 +19,9 @@ import 'package:my_first_app/ui/dialogs/update_name/update_name_dialog.dart';
 import 'package:my_first_app/ui/dialogs/update_email/update_email_dialog.dart';
 import 'package:my_first_app/ui/dialogs/update_password/update_password_dialog.dart';
 import 'package:my_first_app/ui/bottom_sheets/input_validation/input_validation_sheet.dart';
+import 'package:my_first_app/services/user_service.dart';
+import 'package:my_first_app/services/internet_service.dart';
+import 'package:my_first_app/services/image_service.dart';
 // @stacked-import
 
 @StackedApp(
@@ -42,8 +45,10 @@ import 'package:my_first_app/ui/bottom_sheets/input_validation/input_validation_
     LazySingleton(classType: AuthenticationService),
     LazySingleton(classType: SharedPreferenceService),
 
-
-    // @stacked-service
+    LazySingleton(classType: UserService),
+    LazySingleton(classType: InternetService),
+    LazySingleton(classType: ImageService),
+// @stacked-service
   ],
   bottomsheets: [
     StackedBottomsheet(classType: NoticeSheet),

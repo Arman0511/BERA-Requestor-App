@@ -50,7 +50,7 @@ class HomeView extends StackedView<HomeViewModel> {
             child: PageView(
               controller: viewModel.pageController,
               onPageChanged: viewModel.onPageChanged,
-              physics: const NeverScrollableScrollPhysics(), 
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 SingleChildScrollView(
                   child: Column(
@@ -59,54 +59,57 @@ class HomeView extends StackedView<HomeViewModel> {
                         margin: const EdgeInsets.symmetric(vertical: 30),
                         width: 300,
                         height: 600,
-                        child: viewModel.isBusy ? const Center(child: CircularProgressIndicator(),) :Column(
-                          children: <Widget>[
-                            Material(
-                              shape: const CircleBorder(),
-                              elevation:
-                                  4.0, // Adjust the elevation for a shadow effect
-                              color: Colors
-                                  .red, // You can change the color to match your design
-                              child: InkWell(
-                                onTap: viewModel.helpPressed,
-                                child: Container(
-                                  width: 200.0,
-                                  height: 200.0,
-                                  alignment: Alignment.center,
-                                  child: const Text(
-                                    AppConstants.helpText,
-                                    style: TextStyle(color: Colors.white),
+                        child: viewModel.isBusy
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Column(
+                                children: <Widget>[
+                                  Material(
+                                    shape: const CircleBorder(),
+                                    elevation:
+                                        4.0, // Adjust the elevation for a shadow effect
+                                    color: Colors
+                                        .red, // You can change the color to match your design
+                                    child: InkWell(
+                                      onTap: viewModel.helpPressed,
+                                      child: Container(
+                                        width: 200.0,
+                                        height: 200.0,
+                                        alignment: Alignment.center,
+                                        child: const Text(
+                                          AppConstants.helpText,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                    child: App2Button(
+                                      text: AppConstants.medText,
+                                      onClick: viewModel.medPressed,
+                                      isSelected: viewModel.btnMedSelected,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                    child: App2Button(
+                                      text: AppConstants.fireText,
+                                      onClick: viewModel.firePressed,
+                                      isSelected: viewModel.btnFireSelected,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  SizedBox(
+                                    child: App2Button(
+                                      text: AppConstants.policeText,
+                                      onClick: viewModel.policePressed,
+                                      isSelected: viewModel.btnPoliceSelected,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              child: App2Button(
-                                text: AppConstants.medText,
-                                onClick: viewModel.medPressed,
-                                isSelected: viewModel.btnMedSelected,
-                                
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              child: App2Button(
-                                text: AppConstants.fireText,
-                                onClick: viewModel.firePressed,
-                                isSelected: viewModel.btnFireSelected,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              child: App2Button(
-                                text: AppConstants.policeText,
-                                onClick: viewModel.policePressed,
-                                isSelected: viewModel.btnPoliceSelected,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ],
                   ),
@@ -117,7 +120,7 @@ class HomeView extends StackedView<HomeViewModel> {
                       Container(
                         height: 400, // Set a specific height for the GoogleMap
                         child: GoogleMap(
-                        markers: viewModel.markers.values.toSet(),
+                          markers: viewModel.markers.values.toSet(),
                           mapType: MapType.normal,
                           myLocationEnabled: true,
                           initialCameraPosition: googlePlexInitialPosition,
@@ -200,8 +203,5 @@ class HomeView extends StackedView<HomeViewModel> {
   void onViewModelReady(HomeViewModel viewModel) {
     viewModel.init();
   }
-  
-  void onViewModelReadyStatus(HomeViewModel viewModel) {
-    viewModel.initState();
-  }
+
 }

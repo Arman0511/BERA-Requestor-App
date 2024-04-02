@@ -9,7 +9,7 @@ class AppButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onClick,
-    required bool isSelected, 
+    required bool isSelected,
   });
 
   final String text;

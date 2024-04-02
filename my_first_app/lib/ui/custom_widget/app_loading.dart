@@ -10,21 +10,32 @@ class AppLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        alignment: Alignment.center,
+        padding: EdgeInsets.all(20.0),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 7,
+              offset: Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const LinearProgressIndicator(
-              color: AppColor.primaryColor,
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColor.primaryColor),
               backgroundColor: AppColor.secondaryColor,
             ),
+            SizedBox(height: 20.0),
             Text(
               label,
               style: TextStyle(
                 fontSize: 18,
-                letterSpacing: 2,
-                wordSpacing: 2,
+                letterSpacing: 1,
                 fontWeight: FontWeight.bold,
                 color: AppColor.primaryColor,
               ),

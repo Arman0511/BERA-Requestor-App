@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart'  hide User;
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'package:my_first_app/app/app.locator.dart';
+import 'package:my_first_app/services/internet_service.dart';
 import 'package:my_first_app/services/shared_pref_service.dart';
 import 'package:my_first_app/ui/common/app_exception_constants.dart';
 import 'package:my_first_app/ui/common/firebase_constants.dart';
@@ -12,11 +13,11 @@ class AuthenticationService {
   final auth = FirebaseAuth.instance;
   final db = FirebaseFirestore.instance;
   final _sharedPref = locator<SharedPreferenceService>();
+  final _internetService = locator<InternetService>();
 
- bool get isLoggedIn => auth.currentUser != null;
+  bool get isLoggedIn => auth.currentUser != null;
 
-
-  Future<Either<AppException, None>> logout() async{
+  Future<Either<AppException, None>> logout() async {
     try {
       await auth.signOut();
       await _sharedPref.deleteCurrentUser();
@@ -25,7 +26,6 @@ class AuthenticationService {
       return Left(AppException(e.toString()));
     }
   }
-
 
   Future<Either<AppException, User>> login(
       {required String email, required String password}) async {
@@ -54,6 +54,83 @@ class AuthenticationService {
   }
 
 
+ Future<Either<AppException, None>> updateEmail(
+      {required String currentEmail,
+      required String newEmail,
+      required String password}) async {
+    final bool hasInternet = await _internetService.hasInternetConnection();
+    if (hasInternet) {
+      try {
+        var response = await login(email: currentEmail, password: password);
+        return response.fold((l) => Left(AppException(l.message)), (r) async {
+          try {
+            await auth.currentUser!.updateEmail(newEmail);
+            await db.collection("users").doc(r.uid).update(
+              {"email": newEmail},
+            );
+            await getCurrentUser();
+            return const Right(None());
+          } catch (e) {
+            print(e.toString());
+            return Left(AppException(e.toString()));
+          }
+        });
+      } catch (e) {
+        return Left(AppException(e.toString()));
+      }
+    } else {
+      return Left(AppException("Please check your internet connection!"));
+    }
+  }
+
+
+Future<Either<AppException, None>> updatePassword(
+      {required String currentPassword, required String newPassword}) async {
+    final bool hasInternet = await _internetService.hasInternetConnection();
+    if (hasInternet) {
+      try {
+        if (auth.currentUser == null) {
+          return Left((AppException("No User Found")));
+        }
+        var response = await login(
+            email: auth.currentUser!.email!, password: currentPassword);
+        return response.fold((l) => Left(AppException(l.message)), (r) async {
+          try {
+            await auth.currentUser!.updatePassword(newPassword);
+            return const Right(None());
+          } catch (e) {
+            return Left(AppException(e.toString()));
+          }
+        });
+      } catch (e) {
+        return Left(AppException(e.toString()));
+      }
+    } else {
+      return Left(AppException("Please check your internet connection!"));
+    }
+  }
+
+  Future<Either<AppException, User>> getCurrentUser() async {
+    final bool hasInternet = await _internetService.hasInternetConnection();
+    if (hasInternet) {
+      try {
+        final currentUser = await _sharedPref.getCurrentUser();
+        if (currentUser == null) {
+          return Left(AppException("No Current User"));
+        } else {
+          final updateUserDoc =
+              await db.collection('users').doc(currentUser.uid).get();
+          User user = User.fromJson(updateUserDoc.data()!);
+          await _sharedPref.saveUser(user);
+          return Right(User.fromJson(updateUserDoc.data()!));
+        }
+      } catch (e) {
+        return Left(AppException(e.toString()));
+      }
+    } else {
+      return Left(AppException("Please check your internet connection!"));
+    }
+  }
 
   Future<Either<AppException, None>> signup(
       String name, String email, String password, String phoneNum) async {

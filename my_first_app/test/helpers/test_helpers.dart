@@ -2,6 +2,9 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:my_first_app/app/app.locator.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:my_first_app/services/user_service.dart';
+import 'package:my_first_app/services/internet_service.dart';
+import 'package:my_first_app/services/image_service.dart';
 // @stacked-import
 
 import 'test_helpers.mocks.dart';
@@ -10,13 +13,19 @@ import 'test_helpers.mocks.dart';
   MockSpec<NavigationService>(onMissingStub: OnMissingStub.returnDefault),
   MockSpec<BottomSheetService>(onMissingStub: OnMissingStub.returnDefault),
   MockSpec<DialogService>(onMissingStub: OnMissingStub.returnDefault),
-  // @stacked-mock-spec
+  MockSpec<UserService>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<InternetService>(onMissingStub: OnMissingStub.returnDefault),
+  MockSpec<ImageService>(onMissingStub: OnMissingStub.returnDefault),
+// @stacked-mock-spec
 ])
 void registerServices() {
   getAndRegisterNavigationService();
   getAndRegisterBottomSheetService();
   getAndRegisterDialogService();
-  // @stacked-mock-register
+  getAndRegisterUserService();
+  getAndRegisterInternetService();
+  getAndRegisterImageService();
+// @stacked-mock-register
 }
 
 MockNavigationService getAndRegisterNavigationService() {
@@ -69,6 +78,26 @@ MockDialogService getAndRegisterDialogService() {
   return service;
 }
 
+MockUserService getAndRegisterUserService() {
+  _removeRegistrationIfExists<UserService>();
+  final service = MockUserService();
+  locator.registerSingleton<UserService>(service);
+  return service;
+}
+
+MockInternetService getAndRegisterInternetService() {
+  _removeRegistrationIfExists<InternetService>();
+  final service = MockInternetService();
+  locator.registerSingleton<InternetService>(service);
+  return service;
+}
+
+MockImageService getAndRegisterImageService() {
+  _removeRegistrationIfExists<ImageService>();
+  final service = MockImageService();
+  locator.registerSingleton<ImageService>(service);
+  return service;
+}
 // @stacked-mock-create
 
 void _removeRegistrationIfExists<T extends Object>() {

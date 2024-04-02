@@ -28,8 +28,6 @@ class ProfileViewViewModel extends BaseViewModel {
   final _sharedPref = locator<SharedPreferenceService>();
   StreamSubscription<User?>? streamSubscription;
 
-
-
   late User user;
 
   ImageProvider getImage() {
@@ -37,14 +35,14 @@ class ProfileViewViewModel extends BaseViewModel {
     return NetworkImage(user.image!);
   }
 
-void init() async {
+  void init() async {
     setBusy(true);
     user = (await _sharedPref.getCurrentUser())!;
     streamSubscription?.cancel();
     streamSubscription = _sharedPref.userStream.listen((userData) {
-      if(userData != null) {
+      if (userData != null) {
         user = userData;
-       rebuildUi();
+        rebuildUi();
       }
     });
     setBusy(false);
@@ -76,7 +74,10 @@ void init() async {
     response.fold((l) {
       showBottomSheet(l.message);
     }, (r) async {
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
         'status': 'offline',
       });
       _navigationService.popRepeated(1);
@@ -98,33 +99,9 @@ void init() async {
     );
   }
 
-  chooseImageFromGallery() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      imageFile = pickedFile;
-    }
-    BuildContext? context =
-        locator<NavigationService>().navigatorKey?.currentContext!;
-    rebuildUi();
-    await cmethods.checkConnectivity(context!);
+  
 
-    if (imageFile != null) {
-      uploadImageToStorage();
-    } else {
-      cmethods.displaySnackbar("Please choose image first", context);
-    }
-  }
-
-  uploadImageToStorage() async {
-    String imageIDName = DateTime.now().millisecondsSinceEpoch.toString();
-    Reference referenceImage =
-        FirebaseStorage.instance.ref().child("Images").child(imageIDName);
-    UploadTask uploadTask = referenceImage.putFile(File(imageFile!.path));
-    TaskSnapshot snapshot = await uploadTask;
-    urlOfUploadedImage = await snapshot.ref.getDownloadURL();
-    rebuildUi();
-  }
+  
 
   @override
   void dispose() {
