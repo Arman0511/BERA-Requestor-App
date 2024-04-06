@@ -8,7 +8,6 @@ import 'package:my_first_app/ui/custom_widget/dialog_bar.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-
 import 'update_password_dialog_model.dart';
 
 class UpdatePasswordDialog extends StackedView<UpdatePasswordDialogModel> {
@@ -56,7 +55,11 @@ class UpdatePasswordDialog extends StackedView<UpdatePasswordDialogModel> {
                   ),
                 ),
                 verticalSpaceSmall,
-                AppButton(text: "Save", onClick: viewModel.changePassword, isSelected: false,),
+                AppButton(
+                  text: "Save",
+                  onClick: viewModel.changePassword,
+                  isSelected: false,
+                ),
                 verticalSpaceMedium,
               ],
             ),

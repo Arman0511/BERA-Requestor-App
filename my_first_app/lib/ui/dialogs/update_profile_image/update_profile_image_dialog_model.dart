@@ -11,8 +11,6 @@ import 'package:my_first_app/ui/constants/app_png.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-
-
 class UpdateProfileImageDialogModel extends BaseViewModel {
   final _sharedPref = locator<SharedPreferenceService>();
   final _userRepo = locator<UserService>();

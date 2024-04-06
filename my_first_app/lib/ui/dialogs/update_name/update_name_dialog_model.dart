@@ -7,7 +7,6 @@ import 'package:my_first_app/ui/common/input_validation.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-
 class UpdateNameDialogModel extends BaseViewModel with InputValidation {
   final _userRepo = locator<UserService>();
   final _bottomSheetServ = locator<BottomSheetService>();

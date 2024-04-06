@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_first_app/ui/common/app_colors.dart';
 import 'package:my_first_app/ui/common/ui_helpers.dart';
-import 'package:my_first_app/ui/constants/app_color.dart';
+import 'package:my_first_app/ui/constants/App_color.dart';
 import 'package:my_first_app/ui/custom_widget/app_button.dart';
 import 'package:my_first_app/ui/custom_widget/app_loading.dart';
 import 'package:my_first_app/ui/custom_widget/app_textfield.dart';
@@ -9,13 +9,15 @@ import 'package:my_first_app/ui/custom_widget/dialog_bar.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-import 'update_name_dialog_model.dart';
+import 'input_number_dialog_model.dart';
 
-class UpdateNameDialog extends StackedView<UpdateNameDialogModel> {
+const double _graphicSize = 60;
+
+class InputNumberDialog extends StackedView<InputNumberDialogModel> {
   final DialogRequest request;
   final Function(DialogResponse) completer;
 
-  const UpdateNameDialog({
+  const InputNumberDialog({
     Key? key,
     required this.request,
     required this.completer,
@@ -24,10 +26,10 @@ class UpdateNameDialog extends StackedView<UpdateNameDialogModel> {
   @override
   Widget builder(
     BuildContext context,
-    UpdateNameDialogModel viewModel,
+    InputNumberDialogModel viewModel,
     Widget? child,
   ) {
-    return Dialog(
+     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: Colors.white,
       child: viewModel.isBusy
@@ -37,14 +39,14 @@ class UpdateNameDialog extends StackedView<UpdateNameDialogModel> {
               children: [
                 DialogBar(
                   onClick: () => completer(DialogResponse(confirmed: true)),
-                  title: "Change Name",
+                  title: "Phone Number",
                 ),
                 verticalSpaceMedium,
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: AppTextField(
-                    controller: viewModel.nameTextController,
-                    label: "Enter your new name",
+                    controller: viewModel.phonNumTextController,
+                    label: "Enter your phone number",
                     icon: const Icon(
                       Icons.person,
                       color: AppColor.primaryColor,
@@ -52,8 +54,8 @@ class UpdateNameDialog extends StackedView<UpdateNameDialogModel> {
                   ),
                 ),
                 AppButton(
-                  text: "Save",
-                  onClick: viewModel.updateName,
+                  text: "Submit",
+                  onClick: viewModel.saveDocument,
                   isSelected: false,
                 ),
                 verticalSpaceMedium,
@@ -63,11 +65,6 @@ class UpdateNameDialog extends StackedView<UpdateNameDialogModel> {
   }
 
   @override
-  UpdateNameDialogModel viewModelBuilder(BuildContext context) =>
-      UpdateNameDialogModel();
-
-  @override
-  void onViewModelReady(UpdateNameDialogModel viewModel) {
-    viewModel.init();
-  }
+  InputNumberDialogModel viewModelBuilder(BuildContext context) =>
+      InputNumberDialogModel();
 }

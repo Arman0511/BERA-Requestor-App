@@ -83,7 +83,8 @@ class UpdateProfileImageDialog
                 verticalSpaceMedium,
                 AppButton(
                   text: "Save",
-                  onClick: viewModel.uploadImage, isSelected: false,
+                  onClick: viewModel.uploadImage,
+                  isSelected: false,
                 ),
                 verticalSpaceMedium,
               ],

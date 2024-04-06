@@ -8,7 +8,6 @@ import 'package:my_first_app/ui/custom_widget/dialog_bar.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-
 import 'update_email_dialog_model.dart';
 
 class UpdateEmailDialog extends StackedView<UpdateEmailDialogModel> {
@@ -53,7 +52,11 @@ class UpdateEmailDialog extends StackedView<UpdateEmailDialogModel> {
                     ],
                   ),
                 ),
-                AppButton(text: "Save", onClick: viewModel.changeEmail, isSelected: false,),
+                AppButton(
+                  text: "Save",
+                  onClick: viewModel.changeEmail,
+                  isSelected: false,
+                ),
                 verticalSpaceMedium,
               ],
             ),

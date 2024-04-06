@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:my_first_app/model/no_acc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../model/user.dart';
 
@@ -54,6 +55,19 @@ class SharedPreferenceService {
     final sharedPref = await SharedPreferences.getInstance();
     userId = user.uid;
     await sharedPref.setString("USER_KEY", jsonEncode(user.toJson()));
+  }
+
+  Future<void> saveNoAcc(NoAcc user) async {
+   
+    final sharedPref = await SharedPreferences.getInstance();
+    userId = user.uid;
+    await sharedPref.setString("USER_KEY", jsonEncode(user.toJson()));
+  }
+  Future<NoAcc?> getCurrentNoAcc() async {
+    final sharedPref = await SharedPreferences.getInstance();
+    final user = sharedPref.getString("USER_KEY");
+    if (user == null) return null;
+    return NoAcc.fromJson(json.decode(user));
   }
 
   void dispose() {

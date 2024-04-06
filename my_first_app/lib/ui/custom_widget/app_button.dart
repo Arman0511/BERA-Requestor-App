@@ -36,6 +36,7 @@ class AppButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
         ),
         child: Text(
+          textAlign: TextAlign.center,
           text,
           style: const TextStyle(
             letterSpacing: 1.5,

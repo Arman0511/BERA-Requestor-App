@@ -9,6 +9,7 @@ class AppConstants {
   static const emailText = "Email";
   static const passwordText = "Password";
   static const loginText = "Login";
+  static const NoAccText = "Go To No Account Page";
   static const createNewAccText = "Create New Account";
   static const forgotPassText = "Forgot Password";
 
@@ -29,6 +30,7 @@ class AppConstants {
   static const helpText = "HELP!!";
   static const incident1Text = "Incident 1";
   static const logInText = "Log in";
+  static const GoTologInText = "Go to Login Page";
   static const signUpText = "Sign up";
   static const continueText = "Continue";
   static const medText = "Medical Emergency";

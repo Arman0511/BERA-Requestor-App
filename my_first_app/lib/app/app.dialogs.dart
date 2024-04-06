@@ -8,6 +8,7 @@ import 'package:stacked_services/stacked_services.dart';
 
 import 'app.locator.dart';
 import '../ui/dialogs/info_alert/info_alert_dialog.dart';
+import '../ui/dialogs/input_number/input_number_dialog.dart';
 import '../ui/dialogs/update_email/update_email_dialog.dart';
 import '../ui/dialogs/update_name/update_name_dialog.dart';
 import '../ui/dialogs/update_password/update_password_dialog.dart';
@@ -19,6 +20,7 @@ enum DialogType {
   updateName,
   updateEmail,
   updatePassword,
+  inputNumber,
 }
 
 void setupDialogUi() {
@@ -35,6 +37,8 @@ void setupDialogUi() {
         UpdateEmailDialog(request: request, completer: completer),
     DialogType.updatePassword: (context, request, completer) =>
         UpdatePasswordDialog(request: request, completer: completer),
+    DialogType.inputNumber: (context, request, completer) =>
+        InputNumberDialog(request: request, completer: completer),
   };
 
   dialogService.registerCustomDialogBuilders(builders);

@@ -22,6 +22,8 @@ import 'package:my_first_app/ui/bottom_sheets/input_validation/input_validation_
 import 'package:my_first_app/services/user_service.dart';
 import 'package:my_first_app/services/internet_service.dart';
 import 'package:my_first_app/services/image_service.dart';
+import 'package:my_first_app/ui/views/no_account_page/no_account_page_view.dart';
+import 'package:my_first_app/ui/dialogs/input_number/input_number_dialog.dart';
 // @stacked-import
 
 @StackedApp(
@@ -35,6 +37,7 @@ import 'package:my_first_app/services/image_service.dart';
     MaterialRoute(page: ForgotPasswordViewView),
     MaterialRoute(page: ProfileViewView),
 
+    MaterialRoute(page: NoAccountPageView),
 // @stacked-route
   ],
   dependencies: [
@@ -61,6 +64,7 @@ import 'package:my_first_app/services/image_service.dart';
     StackedDialog(classType: UpdateNameDialog),
     StackedDialog(classType: UpdateEmailDialog),
     StackedDialog(classType: UpdatePasswordDialog),
+    StackedDialog(classType: InputNumberDialog),
 // @stacked-dialog
   ],
 )

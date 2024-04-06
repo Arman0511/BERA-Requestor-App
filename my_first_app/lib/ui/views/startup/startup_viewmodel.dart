@@ -20,7 +20,7 @@ class StartupViewModel extends BaseViewModel {
     if (_authService.isLoggedIn && await _sharedPref.getCurrentUser() != null) {
       _navigationService.replaceWithHomeView();
     } else {
-      _navigationService.replaceWithLoginView();
+      _navigationService.replaceWithNoAccountPageView();
     }
   }
 }

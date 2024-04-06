@@ -53,8 +53,7 @@ class AuthenticationService {
     }
   }
 
-
- Future<Either<AppException, None>> updateEmail(
+  Future<Either<AppException, None>> updateEmail(
       {required String currentEmail,
       required String newEmail,
       required String password}) async {
@@ -83,8 +82,7 @@ class AuthenticationService {
     }
   }
 
-
-Future<Either<AppException, None>> updatePassword(
+  Future<Either<AppException, None>> updatePassword(
       {required String currentPassword, required String newPassword}) async {
     final bool hasInternet = await _internetService.hasInternetConnection();
     if (hasInternet) {

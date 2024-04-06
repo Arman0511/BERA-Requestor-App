@@ -99,10 +99,6 @@ class ProfileViewViewModel extends BaseViewModel {
     );
   }
 
-  
-
-  
-
   @override
   void dispose() {
     streamSubscription?.cancel();

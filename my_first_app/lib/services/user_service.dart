@@ -11,12 +11,11 @@ import 'package:my_first_app/services/internet_service.dart';
 import 'package:my_first_app/services/shared_pref_service.dart';
 
 class UserService {
-    final _internetService = locator<InternetService>();
-    final _db = FirebaseFirestore.instance;
-    final _sharedPref = locator<SharedPreferenceService>();
-    final _authServ = locator<AuthenticationService>();
-    final _imageService = locator<ImageService>();
-
+  final _internetService = locator<InternetService>();
+  final _db = FirebaseFirestore.instance;
+  final _sharedPref = locator<SharedPreferenceService>();
+  final _authServ = locator<AuthenticationService>();
+  final _imageService = locator<ImageService>();
 
   Future<Either<AppException, None>> updateName(String name) async {
     final bool hasInternet = await _internetService.hasInternetConnection();

@@ -77,6 +77,10 @@ class LoginViewModel extends BaseViewModel with InputValidation {
     _navigationService.navigateToUserSignUpView();
   }
 
+  void goToNoAcc() {
+    _navigationService.navigateToNoAccountPageView();
+  }
+
   void goToForgotPassword() {
     _navigationService.navigateToForgotPasswordViewView();
   }

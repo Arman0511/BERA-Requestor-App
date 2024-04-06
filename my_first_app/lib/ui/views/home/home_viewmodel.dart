@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -38,9 +37,9 @@ class HomeViewModel extends BaseViewModel {
   Map<MarkerId, Marker> get markers => _markers;
   final double _radius = 1000; // 1 kilometer
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final StreamController<Position> _positionStreamController = StreamController<Position>();
+  final StreamController<Position> _positionStreamController =
+      StreamController<Position>();
   Stream<Position> get positionStream => _positionStreamController.stream;
-
 
   bool btnMedSelected = false;
   bool btnFireSelected = false;
@@ -54,6 +53,7 @@ class HomeViewModel extends BaseViewModel {
   // Declare a class-level variable to store the FCM token
   String? nearestFCMToken;
   String? nearestUID;
+  String? adminUid;
 
   BuildContext? context;
 
@@ -172,47 +172,12 @@ class HomeViewModel extends BaseViewModel {
       if (userData != null) {
         user = userData;
         rebuildUi();
-        storeCurrentLocationOfUser();
-        startLocationUpdates();
+       
       }
     });
-
+    storeCurrentLocationOfUser();
     setBusy(false);
-    startLocationUpdates();
-
-//      FirebaseMessaging.onBackgroundMessage(_handleBackgroundMessage);
-
-//   // Set foreground notification presentation options
-//   FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-//     alert: true,
-//     badge: true,
-//     sound: true,
-//   );
-
-//   // Listen for incoming messages
-//   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-//     // Handle foreground messages
-//     if (message.notification != null) {
-//       // Handle notification payload when app is in the foreground
-//       onNotificationClicked(message.data, true);
-//       vibrate();
-//     }
-//   });
-
-//   // Listen for notification clicks when app is in the background
-//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-//     // Handle notification payload when app is in the background
-//     onNotificationClicked(message.data, true);
-//     vibrate();
-//   });
-// }
-
-// Future<void> _handleBackgroundMessage(RemoteMessage message) async {
-//   if (message.notification != null) {
-//     // Handle notification payload when app is completely closed
-//     onNotificationClicked(message.data, true);
-//     vibrate();
-//   }
+    
   }
 
   Future<void> saveUidToResponder() async {
@@ -222,6 +187,71 @@ class HomeViewModel extends BaseViewModel {
       final userSubUidRef = FirebaseFirestore.instance
           .collection('responder')
           .doc(nearestUID)
+          .collection('userNeededHelp')
+          .doc(user.uid);
+
+      await userSubUidRef.set({
+        'userId': user.uid,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+      });
+      print('UID saved to Firestore successfully!');
+    } catch (error) {
+      print('Error saving UID to Firestore: $error');
+      // Handle error accordingly
+    }
+  }
+
+Future<void> executeGetAndSaveUid() async {
+  try {
+    // Get admin UID
+    String? adminUid = await getAdminUid();
+    
+    // Check if admin UID is not null
+    if (adminUid != null) {
+      // Save UID to admin
+      await saveUidToAdmin(adminUid);
+    } else {
+      print('Admin UID not found or collection is empty.');
+      // Handle case where admin UID is not found
+    }
+  } catch (error) {
+    print('Error executing getAdminUid and saveUidToAdmin: $error');
+    // Handle error accordingly
+  }
+}
+
+
+ Future<String?> getAdminUid() async {
+  // Get a reference to the admin collection
+  CollectionReference adminCollection = FirebaseFirestore.instance.collection('admin');
+
+  // Query for documents in the admin collection
+  QuerySnapshot adminSnapshot = await adminCollection.get();
+
+  // Check if there are any documents in the collection
+  if (adminSnapshot.docs.isNotEmpty) {
+    // Get the first document in the collection
+    var adminDocument = adminSnapshot.docs.first;
+
+    // Extract the 'uid' field from the document data
+    var data = adminDocument.data() as Map<String, dynamic>;
+    if (data.containsKey('uid')) {
+      adminUid = data['uid'];
+      return adminUid;
+    }
+  }
+  
+  // If there are no documents in the collection or uid is not found, return null
+  return null;
+}
+
+  Future<void> saveUidToAdmin(String adminUid) async {
+    try {
+      await init(); // Ensure user is initialized
+
+      final userSubUidRef = FirebaseFirestore.instance
+          .collection('admin')
+          .doc(adminUid)
           .collection('userNeededHelp')
           .doc(user.uid);
 
@@ -427,6 +457,7 @@ class HomeViewModel extends BaseViewModel {
       print('uid of the nearest responder:$nearestUID');
       sendNotification();
       saveUidToResponder();
+      executeGetAndSaveUid();
     }
 
     setBusy(false);
@@ -550,46 +581,45 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> storeCurrentLocationOfUser() async {
-  setBusy(true);
+    setBusy(true);
 
-  // Get current position of the user
-  Position positionOfUser = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.bestForNavigation);
-  currentPositionOfUser = positionOfUser;
+    // Get current position of the user
+    Position positionOfUser = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation);
+    currentPositionOfUser = positionOfUser;
 
-  // Get current date and time
-  DateTime currentDateTime = DateTime.now();
+    // Get current date and time
+    DateTime currentDateTime = DateTime.now();
 
-  // Store the location data in Firestore along with date and time
-  await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
-    'latitude': positionOfUser.latitude,
-    'longitude': positionOfUser.longitude,
-    'timestamp': Timestamp.fromDate(currentDateTime),
-  });
+    // Store the location data in Firestore along with date and time
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      'latitude': positionOfUser.latitude,
+      'longitude': positionOfUser.longitude,
+      'timestamp': Timestamp.fromDate(currentDateTime),
+    });
 
-  // Animate camera to user's current position
-  LatLng positionOfUserInLatLang = LatLng(
-      currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
-  CameraPosition cameraPosition =
-      CameraPosition(target: positionOfUserInLatLang, zoom: 15);
-  controllerGoogleMap!
-      .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    // Animate camera to user's current position
+    LatLng positionOfUserInLatLang = LatLng(
+        currentPositionOfUser!.latitude, currentPositionOfUser!.longitude);
+    CameraPosition cameraPosition =
+        CameraPosition(target: positionOfUserInLatLang, zoom: 15);
+    controllerGoogleMap!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-  setBusy(false);
-}
+    setBusy(false);
+  }
 
   void startLocationUpdates() {
-  // Start getting continuous updates of user's position
-  const LocationSettings locationSettings = LocationSettings(
-    accuracy: LocationAccuracy.bestForNavigation,
-  );
+    // Start getting continuous updates of user's position
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.bestForNavigation,
+    );
 
-  Geolocator.getPositionStream(locationSettings: locationSettings)
-    .listen((Position position) {
+    Geolocator.getPositionStream(locationSettings: locationSettings)
+        .listen((Position position) {
       _positionStreamController.add(position);
     });
-}
-
+  }
 
   void updateMapTheme(GoogleMapController controller) {
     getJsonFileFromThemes("themes/night_style.json")
@@ -611,7 +641,7 @@ class HomeViewModel extends BaseViewModel {
     controllerGoogleMap = mapController;
     googleMapCompleterController.complete(controllerGoogleMap);
     updateMapTheme(controllerGoogleMap!);
-   storeCurrentLocationOfUser();
+    storeCurrentLocationOfUser();
     _getLocationDataOf1kmRadius();
   }
 

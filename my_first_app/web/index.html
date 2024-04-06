@@ -34,10 +34,15 @@
 
   <script>
     // The value below is injected by flutter build, do not touch.
-    var serviceWorkerVersion = null;
+    const serviceWorkerVersion = null;
   </script>
-
+ <!-- This script adds the flutter initialization JS code -->
+ <script src="flutter.js" defer></script>
+  
   <!-- New script block added here -->
+  
+</head>
+<body>
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
@@ -53,30 +58,5 @@
       });
     });
   </script>
-</head>
-<body>
 </body>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDki0tWKKFDaasfd2Cu5nqy8AacSYjRVUE",
-    authDomain: "bera-7e072.firebaseapp.com",
-    projectId: "bera-7e072",
-    storageBucket: "bera-7e072.appspot.com",
-    messagingSenderId: "712554653780",
-    appId: "1:712554653780:web:937e03becbb5fabef165c1",
-    measurementId: "G-WEXRPCM3KV"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </html>
