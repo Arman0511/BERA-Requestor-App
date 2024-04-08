@@ -5,8 +5,6 @@ import 'package:my_first_app/ui/views/startup/startup_view.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:my_first_app/ui/views/login/login_view.dart';
-import 'package:my_first_app/ui/views/responder_homepage/responder_homepage_view.dart';
-
 import '../services/authentication_service.dart';
 import '../services/shared_pref_service.dart';
 import 'package:my_first_app/ui/views/user_sign_up/user_sign_up_view.dart';
@@ -31,7 +29,6 @@ import 'package:my_first_app/ui/dialogs/input_number/input_number_dialog.dart';
     MaterialRoute(page: HomeView),
     MaterialRoute(page: StartupView),
     MaterialRoute(page: LoginView),
-    MaterialRoute(page: ResponderHomepageView),
     MaterialRoute(page: UserSignUpView),
     MaterialRoute(page: MessageViewView),
     MaterialRoute(page: ForgotPasswordViewView),

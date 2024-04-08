@@ -40,7 +40,7 @@
  <script src="flutter.js" defer></script>
   
   <!-- New script block added here -->
-  
+  </script>
 </head>
 <body>
   <script>
@@ -49,6 +49,7 @@
       _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
+          serviceWorkerFile: './firebase-messaging-sw.js'
         },
         onEntrypointLoaded: function(engineInitializer) {
           engineInitializer.initializeEngine().then(function(appRunner) {
@@ -57,6 +58,6 @@
         }
       });
     });
-  </script>
+    </script>
 </body>
 </html>

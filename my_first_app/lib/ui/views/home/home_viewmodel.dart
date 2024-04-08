@@ -93,65 +93,6 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
-// void showDialogBox(BuildContext context) {
-//   showDialog(
-//     context: context,
-//     barrierDismissible: false,
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         title: const Text("A Responder Has Received Your Notification"),
-//         content: const SingleChildScrollView( // Wrap content with SingleChildScrollView
-//           scrollDirection: Axis.horizontal, // Set scroll direction to horizontal
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//             ],
-//           ),
-//         ),
-//         actions: <Widget>[
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-
-//               ElevatedButton(
-//                 onPressed: () {
-
-//                       },
-//                 child: const Text("Close"),
-//               ),
-
-//             ],
-//           ),
-//         ],
-//       );
-//     },
-//   );
-// }
-
-// void getLocationDataAndNotify() {
-//   _getLocationDataOf1kmRadius();
-//   bool shouldProceed = true;
-//   try {
-//     _getFcmAndUidOfNearest();
-//   } catch (e) {
-//     // Catch any exception that might occur during the execution of _getFcmAndUidOfNearest()
-//     // and set shouldProceed to false to prevent the notification from being displayed.
-//     shouldProceed = false;
-//     rethrow;
-//   }
-//   if (shouldProceed) {
-//     showDialogBox(context!);
-//   }
-// }
-
-// void onNotificationClicked(Map<String, dynamic> data, bool isInForeground) {
-//   // Handle notification click here
-//   Future.delayed(const Duration(seconds: 2), () {
-//     showDialogBox(context!);
-
-//   });
-// }
-
   Future<void> vibrate() async {
     // Check if the device supports vibration
     bool? hasVibrator = await Vibration.hasVibrator();
@@ -210,6 +151,7 @@ Future<void> executeGetAndSaveUid() async {
     if (adminUid != null) {
       // Save UID to admin
       await saveUidToAdmin(adminUid);
+     await saveNearestResponderId(adminUid);
     } else {
       print('Admin UID not found or collection is empty.');
       // Handle case where admin UID is not found
@@ -265,6 +207,26 @@ Future<void> executeGetAndSaveUid() async {
       // Handle error accordingly
     }
   }
+  Future<void> saveNearestResponderId(String adminUid) async {
+    try {
+      await init(); // Ensure user is initialized
+
+      final userSubUidRef = FirebaseFirestore.instance
+          .collection('admin')
+          .doc(adminUid)
+          .collection('nearestResponder')
+          .doc(nearestUID);
+
+      await userSubUidRef.set({
+        'userId': nearestUID,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+      });
+      print('UID saved to Firestore successfully!');
+    } catch (error) {
+      print('Error saving UID to Firestore: $error');
+      // Handle error accordingly
+    }
+  }
 
   Future<void> _getLocationDataOf1kmRadius() async {
     setBusy(true);
@@ -292,6 +254,7 @@ Future<void> executeGetAndSaveUid() async {
         in querySnapshot.docs) {
       double latitude = documentSnapshot.data()['latitude'];
       double longitude = documentSnapshot.data()['longitude'];
+      String name = documentSnapshot.data()['name'];
       double distance = Geolocator.distanceBetween(positionOfUser.latitude,
           positionOfUser.longitude, latitude, longitude);
 
@@ -302,8 +265,8 @@ Future<void> executeGetAndSaveUid() async {
         Marker marker = Marker(
           markerId: markerId,
           position: LatLng(latitude, longitude),
-          infoWindow: const InfoWindow(
-            title: 'Responder',
+          infoWindow:InfoWindow(
+            title: name,
           ),
         );
         _markers[markerId] = marker;
@@ -653,7 +616,7 @@ Future<void> executeGetAndSaveUid() async {
     currentPageIndex = index;
     rebuildUi();
     if (index == 1) {
-      // _getLocationDataAndMarkNearest();
+      _getLocationDataAndMarkNearest();
       storeCurrentLocationOfUser();
       if (controllerGoogleMap != null) {
         updateMapTheme(controllerGoogleMap!);
