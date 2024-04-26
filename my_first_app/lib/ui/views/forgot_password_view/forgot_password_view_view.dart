@@ -35,7 +35,7 @@ class ForgotPasswordViewView extends StackedView<ForgotPasswordViewViewModel> {
             ),
             App2Button(
               text: AppConstants.sentResetPassLinkText,
-              onClick: () {},
+              onClick:viewModel.forgotPassword,
               isSelected: false,
             ),
           ],

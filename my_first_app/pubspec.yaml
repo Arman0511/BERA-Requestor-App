@@ -39,6 +39,8 @@ dependencies:
   location: ^5.0.3
   vibration: ^1.8.4
   cupertino_icons: ^1.0.2
+  camera: ^0.10.5+9
+  url_launcher: ^6.2.5
 
 dev_dependencies:
   build_runner: ^2.4.5

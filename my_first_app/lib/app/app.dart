@@ -22,6 +22,7 @@ import 'package:my_first_app/services/internet_service.dart';
 import 'package:my_first_app/services/image_service.dart';
 import 'package:my_first_app/ui/views/no_account_page/no_account_page_view.dart';
 import 'package:my_first_app/ui/dialogs/input_number/input_number_dialog.dart';
+import 'package:my_first_app/ui/dialogs/update_number/update_number_dialog.dart';
 // @stacked-import
 
 @StackedApp(
@@ -62,6 +63,7 @@ import 'package:my_first_app/ui/dialogs/input_number/input_number_dialog.dart';
     StackedDialog(classType: UpdateEmailDialog),
     StackedDialog(classType: UpdatePasswordDialog),
     StackedDialog(classType: InputNumberDialog),
+    StackedDialog(classType: UpdateNumberDialog),
 // @stacked-dialog
   ],
 )

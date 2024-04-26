@@ -94,6 +94,29 @@ class ProfileViewView extends StackedView<ProfileViewViewModel> {
                                   ),
                                 ],
                               ),
+                            ), Container(
+                              width: 160,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      viewModel.user.phonenumber,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        height: 1,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                 AppIconButton(
+                                    onClick: viewModel.showUpdateNumberDialog,
+                                    icon:
+                                        Icons.drive_file_rename_outline_rounded,
+                                    size: 30,
+                                  ),
+                                ],
+                              ),
                             ),
                             Container(
                               height: 10,

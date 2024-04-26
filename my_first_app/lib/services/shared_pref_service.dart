@@ -58,11 +58,11 @@ class SharedPreferenceService {
   }
 
   Future<void> saveNoAcc(NoAcc user) async {
-   
     final sharedPref = await SharedPreferences.getInstance();
     userId = user.uid;
     await sharedPref.setString("USER_KEY", jsonEncode(user.toJson()));
   }
+
   Future<NoAcc?> getCurrentNoAcc() async {
     final sharedPref = await SharedPreferences.getInstance();
     final user = sharedPref.getString("USER_KEY");

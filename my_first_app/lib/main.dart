@@ -14,7 +14,8 @@ import 'package:stacked_services/stacked_services.dart';
 import 'firebase_options.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
-const vapidKey = "<BJUEBngC6XB6lbj5-T3u82M4QVhy67E41_2zyZ4Umwec89Xn-hQCvTTfqulcKpiNqZF8y5W_pGl68cRUJdehiqI>";
+const vapidKey =
+    "<BJUEBngC6XB6lbj5-T3u82M4QVhy67E41_2zyZ4Umwec89Xn-hQCvTTfqulcKpiNqZF8y5W_pGl68cRUJdehiqI>";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,13 +30,17 @@ Future<void> main() async {
   }
 
   if (permission == LocationPermission.deniedForever) {
-    print('Location permission is permanently denied, please enable it from the settings.');
+    print(
+        'Location permission is permanently denied, please enable it from the settings.');
   }
 
   // Initialize a FlutterLocalNotificationsPlugin object
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  const AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
-  final InitializationSettings initializationSettings = InitializationSettings(android: androidInitializationSettings);
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  const AndroidInitializationSettings androidInitializationSettings =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
+  final InitializationSettings initializationSettings =
+      InitializationSettings(android: androidInitializationSettings);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
   try {
@@ -65,11 +70,9 @@ Future<void> main() async {
     print('Error initializing Firebase: $e');
   }
 
-  
-
   // Handle background notification taps
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (message.notification!= null) {
+    if (message.notification != null) {
       print("Background Notification Tapped");
       navigatorKey.currentState!.pushNamed("/message", arguments: message);
     }

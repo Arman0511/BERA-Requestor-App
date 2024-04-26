@@ -35,31 +35,6 @@ class UserSignUpView extends StackedView<UserSignUpViewModel> {
                 SizedBox(
                   height: 25,
                 ),
-                DropdownMenu(
-                  hintText: AppConstants.roleText,
-                  menuStyle: MenuStyle(
-                    alignment: Alignment.centerLeft,
-                  ),
-                  leadingIcon: Icon(
-                    Icons.people_alt,
-                    color: const Color.fromARGB(255, 32, 211, 217),
-                  ),
-                  textStyle: TextStyle(
-                    fontSize: 15,
-                    color: AppColor.secondaryColor,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  dropdownMenuEntries: [
-                    DropdownMenuEntry(
-                      value: 1,
-                      label: AppConstants.needHelpText,
-                    ),
-                    DropdownMenuEntry(
-                      value: 2,
-                      label: AppConstants.responderText,
-                    ),
-                  ],
-                ),
                 SizedBox(
                   height: 25,
                 ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/ui/common/app_colors.dart';
 import 'package:my_first_app/ui/common/ui_helpers.dart';
-import 'package:my_first_app/ui/constants/App_color.dart';
+import 'package:my_first_app/ui/constants/app_color.dart';
 import 'package:my_first_app/ui/custom_widget/app_button.dart';
 import 'package:my_first_app/ui/custom_widget/app_loading.dart';
 import 'package:my_first_app/ui/custom_widget/app_textfield.dart';
@@ -9,15 +9,13 @@ import 'package:my_first_app/ui/custom_widget/dialog_bar.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-import 'input_number_dialog_model.dart';
+import 'update_number_dialog_model.dart';
 
-const double _graphicSize = 60;
-
-class InputNumberDialog extends StackedView<InputNumberDialogModel> {
+class UpdateNumberDialog extends StackedView<UpdateNumberDialogModel> {
   final DialogRequest request;
   final Function(DialogResponse) completer;
 
-  const InputNumberDialog({
+  const UpdateNumberDialog({
     Key? key,
     required this.request,
     required this.completer,
@@ -26,7 +24,7 @@ class InputNumberDialog extends StackedView<InputNumberDialogModel> {
   @override
   Widget builder(
     BuildContext context,
-    InputNumberDialogModel viewModel,
+    UpdateNumberDialogModel viewModel,
     Widget? child,
   ) {
     return Dialog(
@@ -39,14 +37,14 @@ class InputNumberDialog extends StackedView<InputNumberDialogModel> {
               children: [
                 DialogBar(
                   onClick: () => completer(DialogResponse(confirmed: true)),
-                  title: "Phone Number",
+                  title: "Change Number",
                 ),
                 verticalSpaceMedium,
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: AppTextField(
-                    controller: viewModel.phonNumTextController,
-                    label: "Enter your phone number",
+                    controller: viewModel.numberTextController,
+                    label: "Enter your new number",
                     icon: const Icon(
                       Icons.person,
                       color: AppColor.primaryColor,
@@ -54,8 +52,8 @@ class InputNumberDialog extends StackedView<InputNumberDialogModel> {
                   ),
                 ),
                 AppButton(
-                  text: "Submit",
-                  onClick: viewModel.saveDocument,
+                  text: "Save",
+                  onClick: viewModel.updateNumber,
                   isSelected: false,
                 ),
                 verticalSpaceMedium,
@@ -65,6 +63,6 @@ class InputNumberDialog extends StackedView<InputNumberDialogModel> {
   }
 
   @override
-  InputNumberDialogModel viewModelBuilder(BuildContext context) =>
-      InputNumberDialogModel();
+  UpdateNumberDialogModel viewModelBuilder(BuildContext context) =>
+      UpdateNumberDialogModel();
 }

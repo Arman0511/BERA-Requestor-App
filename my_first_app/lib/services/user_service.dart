@@ -34,6 +34,23 @@ class UserService {
     } else {
       return Left(AppException("Please check your internet connection!"));
     }
+  } Future<Either<AppException, None>> updateNumber(String number) async {
+    final bool hasInternet = await _internetService.hasInternetConnection();
+    if (hasInternet) {
+      User? user = await _sharedPref.getCurrentUser();
+      try {
+        await _db
+            .collection("users")
+            .doc(user!.uid)
+            .set({"phonenumber": number}, SetOptions(merge: true));
+        _authServ.getCurrentUser();
+        return const Right(None());
+      } catch (e) {
+        return Left(AppException(e.toString()));
+      }
+    } else {
+      return Left(AppException("Please check your internet connection!"));
+    }
   }
 
   Future<Either<AppException, None>> uploadProfilePicture(

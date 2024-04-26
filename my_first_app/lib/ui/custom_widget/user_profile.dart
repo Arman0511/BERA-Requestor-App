@@ -48,16 +48,6 @@ class UserProfile extends StatelessWidget {
                   wordSpacing: 3,
                 ),
               ),
-              Text(
-                'Normal User',
-                style: TextStyle(
-                  color: AppColor.secondaryColor,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  fontSize: 14,
-                  wordSpacing: 3,
-                ),
-              ),
             ],
           ),
         ],

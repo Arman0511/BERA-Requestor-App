@@ -27,5 +27,13 @@ mixin InputValidation {
     } else {
       return null;
     }
+  }String? isValidInputNumber(String input, String inputType) {
+    if (input == "") {
+      return "Please input your ${inputType.toLowerCase()}";
+    } else if (input.length > 11) {
+      return "Data must be 11 characters";
+    } else {
+      return null;
+    }
   }
 }

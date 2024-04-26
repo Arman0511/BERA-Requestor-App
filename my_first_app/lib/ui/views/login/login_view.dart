@@ -65,11 +65,6 @@ class LoginView extends StackedView<LoginViewModel> {
                     title: AppConstants.forgotPassText,
                     onClick: viewModel.goToForgotPassword,
                   ),
-                  AppButton(
-                    text: AppConstants.NoAccText,
-                    onClick: viewModel.goToNoAcc,
-                    isSelected: false,
-                  ),
                 ],
               ),
       ),

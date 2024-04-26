@@ -13,7 +13,7 @@
     <application
         android:label="BERA User App"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/bera_logo">
         <activity
             android:name=".MainActivity"
             android:exported="true"

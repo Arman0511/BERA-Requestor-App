@@ -17,7 +17,7 @@ class NoAccountPageViewModel extends BaseViewModel {
   final _sharedPref = locator<SharedPreferenceService>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _navigationService = locator<NavigationService>();
-  final _dialogService  = locator<DialogService>();
+  final _dialogService = locator<DialogService>();
 
   bool btnMedSelected = false;
   bool btnFireSelected = false;
@@ -113,8 +113,7 @@ class NoAccountPageViewModel extends BaseViewModel {
       if (distance < shortestDistance) {
         shortestDistance = distance;
         nearestLocation = documentSnapshot.data();
-        nearestFCMToken =
-            documentSnapshot.data()['fcmToken'];
+        nearestFCMToken = documentSnapshot.data()['fcmToken'];
         nearestUID = documentSnapshot.data()['uid'];
       }
       print('FCM token of nearest responder: $nearestFCMToken');
@@ -190,43 +189,38 @@ class NoAccountPageViewModel extends BaseViewModel {
   }
 
   Future<void> saveConcernsToFirestore(List<String> selectedConcerns) async {
-  try {
-    await init(); // Ensure user is initialized
+    try {
+      await init(); // Ensure user is initialized
 
-    final userConcernRef =
-        FirebaseFirestore.instance.collection('users').doc(user!.uid);
+      final userConcernRef =
+          FirebaseFirestore.instance.collection('users').doc(user!.uid);
 
-    final snapshot = await userConcernRef.get();
+      final snapshot = await userConcernRef.get();
 
-    Map<String, dynamic>? userData = snapshot.data();
+      Map<String, dynamic>? userData = snapshot.data();
 
-    userData?['concerns'] =
-        selectedConcerns.isNotEmpty ? selectedConcerns : FieldValue.delete();
+      userData?['concerns'] =
+          selectedConcerns.isNotEmpty ? selectedConcerns : FieldValue.delete();
 
-    await userConcernRef.set(userData!);
+      await userConcernRef.set(userData!);
 
-    print('Concerns saved to Firestore successfully!');
-  } catch (error) {
-    print('Error saving concerns to Firestore: $error');
+      print('Concerns saved to Firestore successfully!');
+    } catch (error) {
+      print('Error saving concerns to Firestore: $error');
+    }
   }
-}
-
 
   init() async {
-  user = (await _sharedPref.getCurrentNoAcc());
-  if (user != null) {
-    await _dialogService.showCustomDialog(
+    user = (await _sharedPref.getCurrentNoAcc());
+    if (user != null) {
+      await _dialogService.showCustomDialog(
         variant: DialogType.inputNumber,
-        );
+      );
 
-    storeCurrentLocationOfUser();
-    startLocationUpdates();
+      storeCurrentLocationOfUser();
+      startLocationUpdates();
+    }
   }
-}
-
-
-
-
 
   void goToLogin() {
     _navigationService.navigateToLoginView();

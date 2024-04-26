@@ -1,22 +1,27 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_first_app/app/app.locator.dart';
 import 'package:my_first_app/app/app.router.dart';
 import 'package:my_first_app/model/user.dart';
 import 'package:my_first_app/notification_service.dart';
 import 'package:my_first_app/services/shared_pref_service.dart';
+import 'package:my_first_app/ui/constants/app_png.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
 class HomeViewModel extends BaseViewModel {
@@ -24,6 +29,7 @@ class HomeViewModel extends BaseViewModel {
   final _snackbarService = locator<SnackbarService>();
   final _sharedPref = locator<SharedPreferenceService>();
   StreamSubscription<User?>? streamSubscription;
+  final describeTextController = TextEditingController();
 
   NotificationService notificationService = NotificationService();
   Position? currentPositionOfUser;
@@ -40,6 +46,8 @@ class HomeViewModel extends BaseViewModel {
   final StreamController<Position> _positionStreamController =
       StreamController<Position>();
   Stream<Position> get positionStream => _positionStreamController.stream;
+  bool isUploading = false;
+double uploadProgress = 0.0;
 
   bool btnMedSelected = false;
   bool btnFireSelected = false;
@@ -49,11 +57,14 @@ class HomeViewModel extends BaseViewModel {
   late User user;
   late Connectivity _connectivity;
   late Timer timer;
+  late File _capturedImage;
 
   // Declare a class-level variable to store the FCM token
   String? nearestFCMToken;
   String? nearestUID;
   String? adminUid;
+  bool isPhotoAdded = false;
+
 
   BuildContext? context;
 
@@ -93,6 +104,190 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
+
+  Future<void> sendNotificationAdmin() async {
+  // Get a reference to the admin collection
+  CollectionReference adminCollection =
+      FirebaseFirestore.instance.collection('admin');
+
+  // Query for documents in the admin collection
+  QuerySnapshot adminSnapshot = await adminCollection.get();
+
+  // Iterate through each document in the collection
+  adminSnapshot.docs.forEach((adminDocument) async {
+    // Extract the 'fcmToken' field from the document data
+    var data = adminDocument.data() as Map<String, dynamic>;
+    if (data.containsKey('fcmToken')) {
+      String fcmToken = data['fcmToken'];
+
+      // Check if FCM token is not null before sending the notification
+      final uri = Uri.parse('https://fcm.googleapis.com/fcm/send');
+      await http.post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAApeeRKFQ:APA91bG2STzaKtq-pwEZQA6nAdzkbFwGqz80bvaF-wM4I1uQIIDOO8pYKz2kIEyPoJEZW3pn6oHrtARdewwttGkVS18gaf1380kC7LpFltrTNKO2FXCZJ5bPX8Ruq9k0LexXudcjaf9I', // Your FCM server key
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            'notification': <String, dynamic>{
+              'body': '',
+              'title': 'Someone is in distress',
+              'android_channel_id': 'your_channel_id', // Required for Android 8.0 and above
+              'alert': 'standard', // Set to 'standard' to show a dialog box
+            },
+            'priority': 'high',
+            'data': <String, dynamic>{
+              'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+              'screen': 'dialog_box', // Screen to open in receiver app
+            },
+            'to': fcmToken, // Receiver's FCM token
+          },
+        ),
+      );
+        }
+  });
+}
+ void showDescribeDialog() {
+  // Check if any of the options are selected
+  if (btnFireSelected || btnMedSelected || btnPoliceSelected) {
+    showDialogWithTextInput(context!);
+  } else {
+    _snackbarService.showSnackbar(
+      message: "Select at least one emergency concern!",
+      duration: const Duration(seconds: 1),
+    );
+  }
+}
+
+
+ Future<void> saveSituationField(String text) async {
+FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).set({
+                'situation': describeTextController.text,
+              }, SetOptions(merge: true));
+            await helpPressed();
+}
+
+Future<void> saveConcernPhoto(_capturedImage) async {
+  // Get a reference to the users collection
+  final usersCollection = FirebaseFirestore.instance.collection('users');
+
+  // Get the current user's document
+  final userDoc = usersCollection.doc(FirebaseAuth.instance.currentUser?.uid);
+
+  // Save the image to Firebase Storage
+  final storageRef = FirebaseStorage.instance.ref().child('concernPhotos/${userDoc.id}');
+  final uploadTask = storageRef.putFile(_capturedImage);
+  final snapshot = await uploadTask.whenComplete(() {});
+  final downloadUrl = await snapshot.ref.getDownloadURL();
+
+  // Save the image's download URL to the user's document
+  await userDoc.set({
+    'situationPhoto': downloadUrl,
+  }, SetOptions(merge: true));
+}
+
+
+
+void showDialogWithTextInput(BuildContext context) {
+  // Show the dialog box
+  showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text('Describe The Situation'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: describeTextController,
+                  decoration: InputDecoration(hintText: 'Type here'),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+  onPressed: () async {
+    // Set loading state to true
+    setState(() {
+      isUploading = true;
+    });
+
+    // Call the camera app and get the captured image
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.camera,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedFile != null) {
+      // Display the captured image in the dialog box
+      setState(() {
+        _capturedImage = File(pickedFile.path);
+      });
+
+      // Save the image to the user's document
+      await saveConcernPhoto(_capturedImage);
+
+      // Change the icon color to green
+      setState(() {
+        isPhotoAdded = true;
+      });
+    }
+
+    // Set loading state to false after uploading is finished
+    setState(() {
+      isUploading = false;
+    });
+  },
+  style: ElevatedButton.styleFrom(
+    foregroundColor: Colors.black,
+    backgroundColor: Colors.grey[300],
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+  ),
+  child: Stack(
+    alignment: Alignment.center,
+    children: [
+      Icon(
+        Icons.camera,
+        color: isPhotoAdded ? Colors.green : Colors.black,
+      ),
+      if (isUploading)
+        CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+    ],
+  ),
+),
+
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Call the saveSituationField method and pass the text from the controller
+                  saveSituationField(describeTextController.text);
+                  Navigator.of(context).pop();
+                },
+                child: Text('Submit'),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+
   Future<void> vibrate() async {
     // Check if the device supports vibration
     bool? hasVibrator = await Vibration.hasVibrator();
@@ -113,12 +308,10 @@ class HomeViewModel extends BaseViewModel {
       if (userData != null) {
         user = userData;
         rebuildUi();
-       
       }
     });
     storeCurrentLocationOfUser();
     setBusy(false);
-    
   }
 
   Future<void> saveUidToResponder() async {
@@ -142,50 +335,50 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
-Future<void> executeGetAndSaveUid() async {
-  try {
-    // Get admin UID
-    String? adminUid = await getAdminUid();
-    
-    // Check if admin UID is not null
-    if (adminUid != null) {
-      // Save UID to admin
-      await saveUidToAdmin(adminUid);
-     await saveNearestResponderId(adminUid);
-    } else {
-      print('Admin UID not found or collection is empty.');
-      // Handle case where admin UID is not found
-    }
-  } catch (error) {
-    print('Error executing getAdminUid and saveUidToAdmin: $error');
-    // Handle error accordingly
-  }
-}
+  Future<void> executeGetAndSaveUid() async {
+    try {
+      // Get admin UID
+      String? adminUid = await getAdminUid();
 
-
- Future<String?> getAdminUid() async {
-  // Get a reference to the admin collection
-  CollectionReference adminCollection = FirebaseFirestore.instance.collection('admin');
-
-  // Query for documents in the admin collection
-  QuerySnapshot adminSnapshot = await adminCollection.get();
-
-  // Check if there are any documents in the collection
-  if (adminSnapshot.docs.isNotEmpty) {
-    // Get the first document in the collection
-    var adminDocument = adminSnapshot.docs.first;
-
-    // Extract the 'uid' field from the document data
-    var data = adminDocument.data() as Map<String, dynamic>;
-    if (data.containsKey('uid')) {
-      adminUid = data['uid'];
-      return adminUid;
+      // Check if admin UID is not null
+      if (adminUid != null) {
+        // Save UID to admin
+        await saveUidToAdmin(adminUid);
+        await saveNearestResponderId(adminUid);
+      } else {
+        print('Admin UID not found or collection is empty.');
+        // Handle case where admin UID is not found
+      }
+    } catch (error) {
+      print('Error executing getAdminUid and saveUidToAdmin: $error');
+      // Handle error accordingly
     }
   }
-  
-  // If there are no documents in the collection or uid is not found, return null
-  return null;
-}
+
+  Future<String?> getAdminUid() async {
+    // Get a reference to the admin collection
+    CollectionReference adminCollection =
+        FirebaseFirestore.instance.collection('admin');
+
+    // Query for documents in the admin collection
+    QuerySnapshot adminSnapshot = await adminCollection.get();
+
+    // Check if there are any documents in the collection
+    if (adminSnapshot.docs.isNotEmpty) {
+      // Get the first document in the collection
+      var adminDocument = adminSnapshot.docs.first;
+
+      // Extract the 'uid' field from the document data
+      var data = adminDocument.data() as Map<String, dynamic>;
+      if (data.containsKey('uid')) {
+        adminUid = data['uid'];
+        return adminUid;
+      }
+    }
+
+    // If there are no documents in the collection or uid is not found, return null
+    return null;
+  }
 
   Future<void> saveUidToAdmin(String adminUid) async {
     try {
@@ -207,6 +400,7 @@ Future<void> executeGetAndSaveUid() async {
       // Handle error accordingly
     }
   }
+
   Future<void> saveNearestResponderId(String adminUid) async {
     try {
       await init(); // Ensure user is initialized
@@ -265,7 +459,7 @@ Future<void> executeGetAndSaveUid() async {
         Marker marker = Marker(
           markerId: markerId,
           position: LatLng(latitude, longitude),
-          infoWindow:InfoWindow(
+          infoWindow: InfoWindow(
             title: name,
           ),
         );
@@ -419,6 +613,7 @@ Future<void> executeGetAndSaveUid() async {
       print('FCM token of nearest responder: $nearestFCMToken');
       print('uid of the nearest responder:$nearestUID');
       sendNotification();
+      sendNotificationAdmin();
       saveUidToResponder();
       executeGetAndSaveUid();
     }
@@ -466,6 +661,8 @@ Future<void> executeGetAndSaveUid() async {
       });
     }
   }
+
+
 
   Future<void> helpPressed() async {
     List<String> selectedConcerns = [];
@@ -615,11 +812,13 @@ Future<void> executeGetAndSaveUid() async {
   void onPageChanged(int index) {
     currentPageIndex = index;
     rebuildUi();
+   _getLocationDataOf1kmRadius();
+    storeCurrentLocationOfUser();
+
     if (index == 1) {
-      _getLocationDataAndMarkNearest();
-      storeCurrentLocationOfUser();
       if (controllerGoogleMap != null) {
         updateMapTheme(controllerGoogleMap!);
+        
       }
     }
   }

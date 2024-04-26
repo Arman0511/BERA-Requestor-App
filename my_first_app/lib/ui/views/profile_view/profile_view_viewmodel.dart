@@ -60,6 +60,12 @@ class ProfileViewViewModel extends BaseViewModel {
     );
   }
 
+  void showUpdateNumberDialog() async {
+    await _dialogService.showCustomDialog(
+      variant: DialogType.updateNumber,
+    );
+  }
+
   void showUpdatePasswordDialog() async {
     await _dialogService.showCustomDialog(
       variant: DialogType.updatePassword,
